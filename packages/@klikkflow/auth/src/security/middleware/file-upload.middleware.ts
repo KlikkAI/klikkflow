@@ -1,4 +1,4 @@
-import { exec } from 'node:child_process';
+import { execFile } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -7,7 +7,7 @@ import { ERROR_CODES } from '@klikkflow/shared';
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import multer, { type FileFilterCallback, MulterError } from 'multer';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 const unlinkAsync = promisify(fs.unlink);
 const statAsync = promisify(fs.stat);
 
@@ -484,7 +484,7 @@ async function scanFileForVirus(
   }
 
   try {
-    const { stdout, stderr } = await execAsync(`${clamavPath} --no-summary "${filePath}"`);
+    const { stdout, stderr } = await execFileAsync(clamavPath, ['--no-summary', filePath]);
 
     if (stderr) {
       // ClamAV stderr output (warnings, etc.)

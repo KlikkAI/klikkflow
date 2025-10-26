@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import type { AuthenticatedUser } from '@klikkflow/shared';
 import type { Request, Response } from 'express';
 import { BaseController } from '../../../base/BaseController';
@@ -38,7 +39,7 @@ export class AuthController extends BaseController {
       token: result.accessToken, // Frontend expects 'token', backend returns 'accessToken'
       refreshToken: result.refreshToken,
       permissions: result.user.permissions || [],
-      sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      sessionId: `session_${Date.now()}_${randomBytes(6).toString('hex')}`,
     };
 
     logger.info(`User registered: ${result.user.id}`);
@@ -60,7 +61,7 @@ export class AuthController extends BaseController {
       token: result.accessToken, // Frontend expects 'token', backend returns 'accessToken'
       refreshToken: result.refreshToken,
       permissions: result.user.permissions || [],
-      sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      sessionId: `session_${Date.now()}_${randomBytes(6).toString('hex')}`,
     };
 
     logger.info(`User logged in: ${result.user.id}`);
@@ -82,7 +83,7 @@ export class AuthController extends BaseController {
    */
   logout = async (_req: Request, res: Response) => {
     // Generate a simple session ID for the response
-    const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const sessionId = `session_${Date.now()}_${randomBytes(6).toString('hex')}`;
 
     this.sendSuccess(
       res,

@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { EventEmitter } from 'node:events';
 import { Logger } from '@klikkflow/core';
 import { z } from 'zod';
@@ -443,11 +444,11 @@ export class AuditLogger extends EventEmitter {
   }
 
   private generateEventId(): string {
-    return `audit_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `audit_${Date.now()}_${randomBytes(6).toString('hex')}`;
   }
 
   private generateReportId(): string {
-    return `report_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `report_${Date.now()}_${randomBytes(6).toString('hex')}`;
   }
 
   private calculateRiskScore(event: Omit<AuditEvent, 'id' | 'timestamp'>): number {

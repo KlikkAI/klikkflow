@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { EventEmitter } from 'node:events';
 
 export interface AuditLogEntry {
@@ -69,7 +70,7 @@ export class AuditLogger extends EventEmitter {
   }
 
   private generateId(): string {
-    return `audit_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `audit_${Date.now()}_${randomBytes(6).toString('hex')}`;
   }
 
   exportLogs(format: 'json' | 'csv' = 'json'): string {

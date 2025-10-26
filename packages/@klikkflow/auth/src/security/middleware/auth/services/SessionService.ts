@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { AuthenticationError } from '@klikkflow/core';
 import type { Request } from 'express';
 import Redis from 'ioredis';
@@ -106,7 +107,7 @@ export class SessionService {
   }
 
   private generateSessionId(): string {
-    return Math.random().toString(36).substring(2) + Date.now().toString(36);
+    return randomBytes(16).toString('hex') + Date.now().toString(36);
   }
 
   private createStore(config?: SessionConfig): SessionStore {
