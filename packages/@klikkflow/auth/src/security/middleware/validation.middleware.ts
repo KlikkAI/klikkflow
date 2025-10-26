@@ -2,6 +2,7 @@ import { ERROR_CODES } from '@klikkflow/shared';
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import DOMPurify from 'isomorphic-dompurify';
 import validator from 'validator';
+import { isValidURL } from '../../utils/url-validator';
 
 export interface ValidationRule {
   field: string;
@@ -259,7 +260,8 @@ const TYPE_VALIDATORS: Record<string, TypeValidator> = {
   email: (value) =>
     typeof value !== 'string' || !validator.isEmail(value) ? 'Invalid email address' : null,
 
-  url: (value) => (typeof value !== 'string' || !validator.isURL(value) ? 'Invalid URL' : null),
+  // CVE-2025-56200: Use secure URL validator instead of validator.isURL()
+  url: (value) => (typeof value !== 'string' || !isValidURL(value) ? 'Invalid URL' : null),
 
   uuid: (value) => (typeof value !== 'string' || !validator.isUUID(value) ? 'Invalid UUID' : null),
 

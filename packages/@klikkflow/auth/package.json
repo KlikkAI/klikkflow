@@ -25,6 +25,11 @@
       "types": "./dist/security/index.d.ts",
       "import": "./dist/security/index.mjs",
       "require": "./dist/security/index.js"
+    },
+    "./utils/url-validator": {
+      "types": "./dist/utils/url-validator.d.ts",
+      "import": "./dist/utils/url-validator.js",
+      "require": "./dist/utils/url-validator.cjs"
     }
   },
   "scripts": {

@@ -1,5 +1,6 @@
 import express, { type Router } from 'express';
 import { body } from 'express-validator';
+import { isValidOAuthRedirectURI } from '../../../../../@klikkflow/auth/src/utils/url-validator';
 import { authenticate } from '../../../middleware/auth';
 import { catchAsync } from '../../../middleware/errorHandlers';
 import {
@@ -37,7 +38,14 @@ router.post(
     body('code').notEmpty().withMessage('Authorization code is required'),
     body('clientId').notEmpty().withMessage('Client ID is required'),
     body('clientSecret').notEmpty().withMessage('Client Secret is required'),
-    body('redirectUri').optional().isURL().withMessage('Invalid redirect URI'),
+    // CVE-2025-56200: Use secure OAuth redirect URI validator instead of isURL()
+    body('redirectUri')
+      .optional()
+      .custom((value) => {
+        if (!value) return true; // Optional field
+        return isValidOAuthRedirectURI(value);
+      })
+      .withMessage('Invalid or insecure redirect URI'),
     body('state').optional().isString().withMessage('Invalid state parameter'),
   ],
   catchAsync(oauthController.exchangeCodeForTokens)
