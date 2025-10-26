@@ -146,26 +146,28 @@ docker-compose --profile monitoring --profile ha up -d
 Create `.env` file in the project root:
 
 ```bash
+# Note: Angle brackets <> indicate placeholders - replace with your actual values
+
 # Core Configuration
 NODE_ENV=production
 PORT=3001
 FRONTEND_PORT=3000
 
-# Database URLs (replace with your actual credentials)
-MONGODB_URI=mongodb://YOUR_MONGO_USER:YOUR_MONGO_PASSWORD@mongo:27017/klikkflow
-POSTGRES_URI=postgresql://YOUR_POSTGRES_USER:YOUR_POSTGRES_PASSWORD@postgres:5432/klikkflow
-REDIS_URL=redis://:YOUR_REDIS_PASSWORD@redis:6379
+# Database URLs (replace <PLACEHOLDERS> with your actual credentials)
+MONGODB_URI=mongodb://<MONGO_USER>:<MONGO_PASSWORD>@mongo:27017/klikkflow
+POSTGRES_URI=postgresql://<POSTGRES_USER>:<POSTGRES_PASSWORD>@postgres:5432/klikkflow
+REDIS_URL=redis://:<REDIS_PASSWORD>@redis:6379
 
 # Security (IMPORTANT: Generate secure random values!)
-JWT_SECRET=CHANGE_THIS_TO_SECURE_RANDOM_JWT_SECRET
-ENCRYPTION_KEY=CHANGE_THIS_TO_32_CHAR_KEY_123456
+JWT_SECRET=<generate-with-openssl-rand-base64-32>
+ENCRYPTION_KEY=<generate-32-character-encryption-key>
 
 # OAuth (Optional - for integrations)
-GMAIL_CLIENT_ID=YOUR_GMAIL_CLIENT_ID
-GMAIL_CLIENT_SECRET=YOUR_GMAIL_CLIENT_SECRET
+GMAIL_CLIENT_ID=<your-gmail-oauth-client-id>
+GMAIL_CLIENT_SECRET=<your-gmail-oauth-client-secret>
 
 # Monitoring (Optional)
-GRAFANA_ADMIN_PASSWORD=YOUR_SECURE_GRAFANA_PASSWORD
+GRAFANA_ADMIN_PASSWORD=<secure-grafana-admin-password>
 
 # Backup (Optional - for S3 backup)
 BACKUP_S3_BUCKET=klikkflow-backups
@@ -369,11 +371,14 @@ If not using Helm, deploy manually with kubectl:
 kubectl create namespace klikkflow
 
 # Apply secrets
+# Note: Angle brackets <> indicate placeholders - replace with your actual values
+# Example: mongodb://<USERNAME>:<PASSWORD>@host becomes mongodb://admin:secret123@host
+#
 # First, set your credentials as environment variables:
-# export JWT_SECRET="your-secure-random-jwt-secret"
-# export MONGODB_URI="mongodb://username:password@mongo:27017/klikkflow"
-# export POSTGRES_URI="postgresql://username:password@postgres:5432/klikkflow"
-# export REDIS_URL="redis://:your-redis-password@redis:6379"
+# export JWT_SECRET="<your-secure-random-jwt-secret>"
+# export MONGODB_URI="mongodb://<USERNAME>:<PASSWORD>@mongo:27017/klikkflow"
+# export POSTGRES_URI="postgresql://<USERNAME>:<PASSWORD>@postgres:5432/klikkflow"
+# export REDIS_URL="redis://:<REDIS_PASSWORD>@redis:6379"
 
 kubectl create secret generic klikkflow-secrets \
   --from-literal=jwt-secret="${JWT_SECRET}" \
@@ -402,9 +407,10 @@ kubectl get ingress -n klikkflow
 ```bash
 cd infrastructure/terraform/aws/ecs
 
+# Note: Angle brackets <> indicate placeholders - replace with your actual values
 # First, set your credentials as environment variables:
-# export MONGODB_URI="mongodb+srv://YOUR_USERNAME:YOUR_PASSWORD@cluster.mongodb.net/klikkflow"
-# export POSTGRES_URI="postgresql://YOUR_USERNAME:YOUR_PASSWORD@rds-instance.region.rds.amazonaws.com:5432/klikkflow"
+# export MONGODB_URI="mongodb+srv://<USERNAME>:<PASSWORD>@cluster.mongodb.net/klikkflow"
+# export POSTGRES_URI="postgresql://<USERNAME>:<PASSWORD>@rds-instance.region.rds.amazonaws.com:5432/klikkflow"
 # export REDIS_URI="redis://elasticache-cluster.region.cache.amazonaws.com:6379"
 
 # Configure variables
