@@ -16,7 +16,7 @@
   "dependencies": {
     "@klikkflow/shared": "workspace:*",
     "@klikkflow/backend": "workspace:*",
-    "nodemailer": "^6.9.8",
+    "nodemailer": "^7.0.10",
     "twilio": "^4.19.3",
     "slack-web-api": "^7.0.4",
     "discord.js": "^14.14.1",
