@@ -5,6 +5,7 @@ import { IDEPerformanceAnalyzer } from '../developer-experience/IDEPerformanceAn
 import { ProductivityTracker } from '../developer-experience/ProductivityTracker.js';
 
 export class DevExperienceCLI {
+  private workspaceRoot: string;
   private devMetrics: DevExperienceMetrics;
   private ideAnalyzer: IDEPerformanceAnalyzer;
   private productivityTracker: ProductivityTracker;
