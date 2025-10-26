@@ -6,6 +6,7 @@
 // import { authMiddleware } from '@klikkflow/security';
 import { Router } from 'express';
 import { z } from 'zod';
+import { moderateRateLimit, relaxedRateLimit } from '../middleware/rate-limit.middleware';
 import { auditService } from '../services/AuditService';
 
 const router = Router();
@@ -34,7 +35,7 @@ const AuditQuerySchema = z.object({
  * GET /api/audit/events
  * Query audit events
  */
-router.get('/events', async (req, res) => {
+router.get('/events', relaxedRateLimit, async (req, res) => {
   try {
     const query = AuditQuerySchema.parse(req.query);
 
@@ -69,7 +70,7 @@ router.get('/events', async (req, res) => {
  * POST /api/audit/reports
  * Generate compliance report
  */
-router.post('/reports', async (req, res) => {
+router.post('/reports', moderateRateLimit, async (req, res) => {
   try {
     const schema = z.object({
       reportType: z.enum(['compliance', 'security', 'activity', 'risk']),
@@ -109,7 +110,7 @@ router.post('/reports', async (req, res) => {
  * POST /api/audit/export
  * Export audit events
  */
-router.post('/export', async (req, res) => {
+router.post('/export', moderateRateLimit, async (req, res) => {
   try {
     const schema = z.object({
       query: AuditQuerySchema.optional(),
@@ -152,7 +153,7 @@ router.post('/export', async (req, res) => {
  * POST /api/audit/log
  * Log audit event (internal use)
  */
-router.post('/log', async (req, res) => {
+router.post('/log', moderateRateLimit, async (req, res) => {
   try {
     const schema = z.object({
       category: z.enum([

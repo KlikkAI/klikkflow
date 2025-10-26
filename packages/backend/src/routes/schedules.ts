@@ -6,6 +6,7 @@
 // import { authMiddleware } from '@klikkflow/security';
 import { Router } from 'express';
 import { z } from 'zod';
+import { moderateRateLimit, relaxedRateLimit } from '../middleware/rate-limit.middleware';
 import { workflowSchedulerService } from '../services/WorkflowSchedulerService';
 
 const router = Router();
@@ -34,7 +35,7 @@ const CreateScheduleSchema = z.object({
  * GET /api/schedules
  * List workflow schedules
  */
-router.get('/', async (req, res) => {
+router.get('/', relaxedRateLimit, async (req, res) => {
   try {
     const schema = z.object({
       workflowId: z.string().optional(),
@@ -59,7 +60,7 @@ router.get('/', async (req, res) => {
  * POST /api/schedules
  * Create a new workflow schedule
  */
-router.post('/', async (req, res) => {
+router.post('/', moderateRateLimit, async (req, res) => {
   try {
     const { workflowId, config, metadata = {} } = CreateScheduleSchema.parse(req.body);
 
@@ -92,7 +93,7 @@ router.post('/', async (req, res) => {
  * GET /api/schedules/:id
  * Get schedule by ID
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id', relaxedRateLimit, async (req, res) => {
   try {
     const { id } = req.params;
     const schedule = workflowSchedulerService.getSchedule(id);
@@ -120,7 +121,7 @@ router.get('/:id', async (req, res) => {
  * PUT /api/schedules/:id
  * Update schedule
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', moderateRateLimit, async (req, res) => {
   try {
     const { id } = req.params;
     const updates = z
@@ -150,7 +151,7 @@ router.put('/:id', async (req, res) => {
  * DELETE /api/schedules/:id
  * Delete schedule
  */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', moderateRateLimit, async (req, res) => {
   try {
     const { id } = req.params;
     await workflowSchedulerService.deleteSchedule(id);
@@ -171,7 +172,7 @@ router.delete('/:id', async (req, res) => {
  * POST /api/schedules/:id/toggle
  * Enable/disable schedule
  */
-router.post('/:id/toggle', async (req, res) => {
+router.post('/:id/toggle', moderateRateLimit, async (req, res) => {
   try {
     const { id } = req.params;
     const { enabled } = z
@@ -198,7 +199,7 @@ router.post('/:id/toggle', async (req, res) => {
  * POST /api/schedules/:id/trigger
  * Manually trigger a scheduled workflow
  */
-router.post('/:id/trigger', async (req, res) => {
+router.post('/:id/trigger', moderateRateLimit, async (req, res) => {
   try {
     const { id } = req.params;
     const executionId = await workflowSchedulerService.triggerSchedule(id);
@@ -219,7 +220,7 @@ router.post('/:id/trigger', async (req, res) => {
  * GET /api/schedules/:id/executions
  * Get scheduled executions for a specific schedule
  */
-router.get('/:id/executions', async (req, res) => {
+router.get('/:id/executions', relaxedRateLimit, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -250,7 +251,7 @@ router.get('/:id/executions', async (req, res) => {
  * GET /api/schedules/analytics
  * Get schedule analytics
  */
-router.get('/analytics', async (_req, res) => {
+router.get('/analytics', relaxedRateLimit, async (_req, res) => {
   try {
     const analytics = workflowSchedulerService.getScheduleAnalytics();
 
@@ -270,7 +271,7 @@ router.get('/analytics', async (_req, res) => {
  * GET /api/schedules/executions
  * Get all scheduled executions
  */
-router.get('/executions', async (req, res) => {
+router.get('/executions', relaxedRateLimit, async (req, res) => {
   try {
     const schema = z.object({
       workflowId: z.string().optional(),
