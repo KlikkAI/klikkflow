@@ -39,7 +39,7 @@
       "correctness": {
         "noUnusedVariables": "warn",
         "noUnusedImports": "error",
-        "noUnusedPrivateClassMembers": "warn",
+        "noUnusedPrivateClassMembers": "off",
         "useExhaustiveDependencies": "warn",
         "noUndeclaredVariables": "warn",
         "noUnreachable": "error",
