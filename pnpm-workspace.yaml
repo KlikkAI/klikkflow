@@ -43,8 +43,8 @@ catalog:
   "@types/react-dom": ^19.2.0
   "@types/supertest": ^6.0.2
   "@vitejs/plugin-react": ^4.6.0
-  "@vitest/coverage-v8": ^3.2.4
-  "@vitest/ui": ^3.2.4
+  "@vitest/coverage-v8": ^4.0.3
+  "@vitest/ui": ^4.0.3
   antd: ^5.26.4
   autoprefixer: ^10.4.21
   axios: ^1.10.0
@@ -104,7 +104,7 @@ catalog:
   turbo: ^2.5.6
   typescript: ^5.9.3
   vite: ^7.1.11
-  vitest: ^3.2.4
+  vitest: ^4.0.3
   winston: ^3.11.0
   ws: ^8.14.0
   zod: ^4.1.11
