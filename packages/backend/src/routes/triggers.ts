@@ -6,6 +6,11 @@
 // import { authMiddleware } from '@klikkflow/security';
 import { Router } from 'express';
 import { z } from 'zod';
+import {
+  moderateRateLimit,
+  relaxedRateLimit,
+  webhookRateLimit,
+} from '../middleware/rate-limit.middleware';
 import { triggerSystemService } from '../services/TriggerSystemService';
 
 const router = Router();
@@ -51,7 +56,7 @@ const CreateTriggerSchema = z.object({
  * GET /api/triggers
  * List triggers
  */
-router.get('/', async (req, res) => {
+router.get('/', relaxedRateLimit, async (req, res) => {
   try {
     const schema = z.object({
       workflowId: z.string().optional(),
@@ -77,7 +82,7 @@ router.get('/', async (req, res) => {
  * POST /api/triggers
  * Create a new trigger
  */
-router.post('/', async (req, res) => {
+router.post('/', moderateRateLimit, async (req, res) => {
   try {
     const triggerData = CreateTriggerSchema.parse(req.body);
     const trigger = await triggerSystemService.createTrigger(triggerData);
@@ -98,7 +103,7 @@ router.post('/', async (req, res) => {
  * GET /api/triggers/:id
  * Get trigger by ID
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id', relaxedRateLimit, async (req, res) => {
   try {
     const { id } = req.params;
     const trigger = triggerSystemService.getTrigger(id);
@@ -126,7 +131,7 @@ router.get('/:id', async (req, res) => {
  * PUT /api/triggers/:id
  * Update trigger
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', moderateRateLimit, async (req, res) => {
   try {
     const { id } = req.params;
     const updates = CreateTriggerSchema.partial().parse(req.body);
@@ -149,7 +154,7 @@ router.put('/:id', async (req, res) => {
  * DELETE /api/triggers/:id
  * Delete trigger
  */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', moderateRateLimit, async (req, res) => {
   try {
     const { id } = req.params;
     await triggerSystemService.deleteTrigger(id);
@@ -170,7 +175,7 @@ router.delete('/:id', async (req, res) => {
  * POST /api/triggers/:id/test
  * Manually trigger a workflow
  */
-router.post('/:id/test', async (req, res) => {
+router.post('/:id/test', moderateRateLimit, async (req, res) => {
   try {
     const { id } = req.params;
     const { payload = {} } = req.body;
@@ -200,7 +205,7 @@ router.post('/:id/test', async (req, res) => {
  * GET /api/triggers/:id/events
  * Get trigger events
  */
-router.get('/:id/events', async (req, res) => {
+router.get('/:id/events', relaxedRateLimit, async (req, res) => {
   try {
     const { id } = req.params;
     const events = triggerSystemService.getTriggerEvents(id);
@@ -221,7 +226,7 @@ router.get('/:id/events', async (req, res) => {
  * GET /api/triggers/:id/metrics
  * Get trigger metrics
  */
-router.get('/:id/metrics', async (req, res) => {
+router.get('/:id/metrics', relaxedRateLimit, async (req, res) => {
   try {
     const { id } = req.params;
     const metrics = triggerSystemService.getTriggerMetrics(id);
@@ -242,7 +247,7 @@ router.get('/:id/metrics', async (req, res) => {
  * POST /api/triggers/webhook/:path
  * Handle webhook requests (special route)
  */
-router.all('/webhook/*', async (req, res) => {
+router.all('/webhook/*', webhookRateLimit, async (req, res) => {
   try {
     const path = (req.params as string[])[0]; // Get the wildcard path
     const method = req.method;

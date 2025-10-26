@@ -19,6 +19,7 @@ import {
   UpdateThreatStatusSchema,
 } from '@klikkflow/shared';
 import { type Request, type Response, Router } from 'express';
+import { moderateRateLimit, relaxedRateLimit } from '../middleware/rate-limit.middleware';
 import { enterpriseSecurityService } from '../services/EnterpriseSecurityService';
 
 const router = Router();
@@ -27,7 +28,7 @@ const router = Router();
  * GET /api/security/metrics
  * Get current security metrics
  */
-router.get('/metrics', async (_req: Request, res: Response) => {
+router.get('/metrics', relaxedRateLimit, async (_req: Request, res: Response) => {
   try {
     const metrics = enterpriseSecurityService.getSecurityMetrics();
     const metricsDTO = toSecurityMetricsDTO(metrics);
@@ -48,7 +49,7 @@ router.get('/metrics', async (_req: Request, res: Response) => {
  * GET /api/security/threats
  * Get security threats
  */
-router.get('/threats', async (req: Request, res: Response) => {
+router.get('/threats', relaxedRateLimit, async (req: Request, res: Response) => {
   try {
     const { status } = ThreatQuerySchema.parse(req.query);
     const threats = enterpriseSecurityService.getSecurityThreats(status);
@@ -70,7 +71,7 @@ router.get('/threats', async (req: Request, res: Response) => {
  * POST /api/security/threats
  * Create a new security threat
  */
-router.post('/threats', async (req: Request, res: Response) => {
+router.post('/threats', moderateRateLimit, async (req: Request, res: Response) => {
   try {
     const threatData = CreateThreatSchema.parse(req.body);
 
@@ -104,7 +105,7 @@ router.post('/threats', async (req: Request, res: Response) => {
  * PUT /api/security/threats/:id/status
  * Update threat status
  */
-router.put('/threats/:id/status', async (req: Request, res: Response) => {
+router.put('/threats/:id/status', moderateRateLimit, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { status, resolution, assignedTo } = UpdateThreatStatusSchema.parse(req.body);
@@ -141,7 +142,7 @@ router.put('/threats/:id/status', async (req: Request, res: Response) => {
  * POST /api/security/scans
  * Start vulnerability scan
  */
-router.post('/scans', async (req: Request, res: Response) => {
+router.post('/scans', moderateRateLimit, async (req: Request, res: Response) => {
   try {
     const { type, metadata = {} } = StartVulnerabilityScanSchema.parse(req.body);
 
@@ -164,7 +165,7 @@ router.post('/scans', async (req: Request, res: Response) => {
  * GET /api/security/scans
  * Get vulnerability scans
  */
-router.get('/scans', async (req: Request, res: Response) => {
+router.get('/scans', relaxedRateLimit, async (req: Request, res: Response) => {
   try {
     const { type } = ScanQuerySchema.parse(req.query);
     const scans = enterpriseSecurityService.getVulnerabilityScans(type);
@@ -186,7 +187,7 @@ router.get('/scans', async (req: Request, res: Response) => {
  * GET /api/security/alerts
  * Get security alerts
  */
-router.get('/alerts', async (req: Request, res: Response) => {
+router.get('/alerts', relaxedRateLimit, async (req: Request, res: Response) => {
   try {
     const { acknowledged } = AlertQuerySchema.parse(req.query);
     const alerts = enterpriseSecurityService.getSecurityAlerts(acknowledged);
@@ -208,7 +209,7 @@ router.get('/alerts', async (req: Request, res: Response) => {
  * POST /api/security/alerts/:id/acknowledge
  * Acknowledge security alert
  */
-router.post('/alerts/:id/acknowledge', async (req: Request, res: Response) => {
+router.post('/alerts/:id/acknowledge', moderateRateLimit, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { acknowledgedBy } = AcknowledgeAlertSchema.parse(req.body);
@@ -240,7 +241,7 @@ router.post('/alerts/:id/acknowledge', async (req: Request, res: Response) => {
  * GET /api/security/compliance
  * Get compliance frameworks
  */
-router.get('/compliance', async (_req: Request, res: Response) => {
+router.get('/compliance', relaxedRateLimit, async (_req: Request, res: Response) => {
   try {
     const frameworks = enterpriseSecurityService.getComplianceFrameworks();
     const frameworksDTO = frameworks.map(toSecurityComplianceFrameworkDTO);
@@ -261,7 +262,7 @@ router.get('/compliance', async (_req: Request, res: Response) => {
  * POST /api/security/compliance/:id/assess
  * Assess compliance for a framework
  */
-router.post('/compliance/:id/assess', async (req: Request, res: Response) => {
+router.post('/compliance/:id/assess', moderateRateLimit, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
