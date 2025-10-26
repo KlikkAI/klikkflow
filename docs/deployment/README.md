@@ -151,21 +151,21 @@ NODE_ENV=production
 PORT=3001
 FRONTEND_PORT=3000
 
-# Database URLs
-MONGODB_URI=mongodb://mongo:27017/klikkflow
-POSTGRES_URI=postgresql://postgres:klikkflow_prod_password@postgres:5432/klikkflow
-REDIS_URL=redis://redis:6379
+# Database URLs (replace with your actual credentials)
+MONGODB_URI=mongodb://YOUR_MONGO_USER:YOUR_MONGO_PASSWORD@mongo:27017/klikkflow
+POSTGRES_URI=postgresql://YOUR_POSTGRES_USER:YOUR_POSTGRES_PASSWORD@postgres:5432/klikkflow
+REDIS_URL=redis://:YOUR_REDIS_PASSWORD@redis:6379
 
-# Security
-JWT_SECRET=your-secure-jwt-secret-change-this
-ENCRYPTION_KEY=your-32-character-encryption-key
+# Security (IMPORTANT: Generate secure random values!)
+JWT_SECRET=CHANGE_THIS_TO_SECURE_RANDOM_JWT_SECRET
+ENCRYPTION_KEY=CHANGE_THIS_TO_32_CHAR_KEY_123456
 
 # OAuth (Optional - for integrations)
-GMAIL_CLIENT_ID=your-gmail-client-id
-GMAIL_CLIENT_SECRET=your-gmail-client-secret
+GMAIL_CLIENT_ID=YOUR_GMAIL_CLIENT_ID
+GMAIL_CLIENT_SECRET=YOUR_GMAIL_CLIENT_SECRET
 
 # Monitoring (Optional)
-GRAFANA_ADMIN_PASSWORD=secure-grafana-password
+GRAFANA_ADMIN_PASSWORD=YOUR_SECURE_GRAFANA_PASSWORD
 
 # Backup (Optional - for S3 backup)
 BACKUP_S3_BUCKET=klikkflow-backups
@@ -369,11 +369,17 @@ If not using Helm, deploy manually with kubectl:
 kubectl create namespace klikkflow
 
 # Apply secrets
+# First, set your credentials as environment variables:
+# export JWT_SECRET="your-secure-random-jwt-secret"
+# export MONGODB_URI="mongodb://username:password@mongo:27017/klikkflow"
+# export POSTGRES_URI="postgresql://username:password@postgres:5432/klikkflow"
+# export REDIS_URL="redis://:your-redis-password@redis:6379"
+
 kubectl create secret generic klikkflow-secrets \
-  --from-literal=jwt-secret=your-jwt-secret \
-  --from-literal=mongodb-uri=mongodb://user:pass@mongo:27017/klikkflow \
-  --from-literal=postgres-uri=postgresql://user:pass@postgres:5432/klikkflow \
-  --from-literal=redis-url=redis://:password@redis:6379 \
+  --from-literal=jwt-secret="${JWT_SECRET}" \
+  --from-literal=mongodb-uri="${MONGODB_URI}" \
+  --from-literal=postgres-uri="${POSTGRES_URI}" \
+  --from-literal=redis-url="${REDIS_URL}" \
   -n klikkflow
 
 # Apply manifests
@@ -396,14 +402,19 @@ kubectl get ingress -n klikkflow
 ```bash
 cd infrastructure/terraform/aws/ecs
 
+# First, set your credentials as environment variables:
+# export MONGODB_URI="mongodb+srv://YOUR_USERNAME:YOUR_PASSWORD@cluster.mongodb.net/klikkflow"
+# export POSTGRES_URI="postgresql://YOUR_USERNAME:YOUR_PASSWORD@rds-instance.region.rds.amazonaws.com:5432/klikkflow"
+# export REDIS_URI="redis://elasticache-cluster.region.cache.amazonaws.com:6379"
+
 # Configure variables
 cat > terraform.tfvars <<EOF
 region = "us-east-1"
 environment = "production"
 vpc_cidr = "10.0.0.0/16"
-mongodb_uri = "mongodb+srv://user:pass@cluster.mongodb.net/klikkflow"
-postgres_uri = "postgresql://user:pass@rds-instance.region.rds.amazonaws.com:5432/klikkflow"
-redis_uri = "redis://elasticache-cluster.region.cache.amazonaws.com:6379"
+mongodb_uri = "${MONGODB_URI}"
+postgres_uri = "${POSTGRES_URI}"
+redis_uri = "${REDIS_URI}"
 EOF
 
 # Deploy infrastructure
