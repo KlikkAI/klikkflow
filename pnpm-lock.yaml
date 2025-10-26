@@ -413,8 +413,8 @@ importers:
         specifier: 'catalog:'
         version: 29.7.0(@types/node@24.6.2)(babel-plugin-macros@3.1.0)
       tsup:
-        specifier: ^7.2.0
-        version: 7.2.0(@swc/core@1.13.5)(postcss@8.5.6)(typescript@5.9.3)
+        specifier: ^8.3.5
+        version: 8.5.0(@swc/core@1.13.5)(jiti@2.6.0)(postcss@8.5.6)(tsx@4.20.5)(typescript@5.9.3)(yaml@2.8.1)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -531,8 +531,8 @@ importers:
         specifier: 'catalog:'
         version: 29.7.0(@types/node@24.6.2)(babel-plugin-macros@3.1.0)
       tsup:
-        specifier: ^7.2.0
-        version: 7.2.0(@swc/core@1.13.5)(postcss@8.5.6)(typescript@5.9.3)
+        specifier: ^8.3.5
+        version: 8.5.0(@swc/core@1.13.5)(jiti@2.6.0)(postcss@8.5.6)(tsx@4.20.5)(typescript@5.9.3)(yaml@2.8.1)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -4535,12 +4535,6 @@ packages:
   bundle-name@4.1.0:
     resolution: {integrity: sha512-tjwM5exMg6BGRI+kNmTntNsvdZS1X8BFYS6tnJ2hdH0kVxM6/eVZ2xy+FqStSWvYmtfFMDLIxurorHwDKfDz5Q==}
     engines: {node: '>=18'}
-
-  bundle-require@4.2.1:
-    resolution: {integrity: sha512-7Q/6vkyYAwOmQNRw75x+4yRtZCZJXUDmHHlFdkiV0wgv/reNjtJwpu1jPJ0w2kbEpIM0uoKI3S4/f39dU7AjSA==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-    peerDependencies:
-      esbuild: ^0.25.0
 
   bundle-require@5.1.0:
     resolution: {integrity: sha512-3WrrOuZiyaaZPWiEt4G3+IffISVC9HYlWueJEBWED4ZH4aIAC2PnkdnuRrR94M+w6yGWn4AglWtJtBI8YqvgoA==}
@@ -8668,11 +8662,6 @@ packages:
     engines: {node: 20 || >=22}
     hasBin: true
 
-  rollup@3.29.5:
-    resolution: {integrity: sha512-GVsDdsbJzzy4S/v3dqWPJ7EfvZJfCHiDqe80IyrF59LYuP+e6U1LJoUqeuqRbwAWoMNoXivMNeNAOf5E22VA1w==}
-    engines: {node: '>=14.18.0', npm: '>=8.0.0'}
-    hasBin: true
-
   rollup@4.52.2:
     resolution: {integrity: sha512-I25/2QgoROE1vYV+NQ1En9T9UFB9Cmfm2CJ83zZOlaDpvz29wGQSZXWKw7MiNXau7wYgB/T9fVIdIuEQ+KbiiA==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
@@ -9333,22 +9322,6 @@ packages:
 
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
-
-  tsup@7.2.0:
-    resolution: {integrity: sha512-vDHlczXbgUvY3rWvqFEbSqmC1L7woozbzngMqTtL2PGBODTtWlRwGDDawhvWzr5c1QjKe4OAKqJGfE1xeXUvtQ==}
-    engines: {node: '>=16.14'}
-    hasBin: true
-    peerDependencies:
-      '@swc/core': ^1
-      postcss: ^8.4.12
-      typescript: ^5.9.3
-    peerDependenciesMeta:
-      '@swc/core':
-        optional: true
-      postcss:
-        optional: true
-      typescript:
-        optional: true
 
   tsup@8.5.0:
     resolution: {integrity: sha512-VmBp77lWNQq6PfuMqCHD3xWl22vEoWsKajkF8t+yMBawlUS8JzEI+vOVMeuNZIuMML8qXRizFKi9oD5glKQVcQ==}
@@ -14746,11 +14719,6 @@ snapshots:
     dependencies:
       run-applescript: 7.1.0
 
-  bundle-require@4.2.1(esbuild@0.25.10):
-    dependencies:
-      esbuild: 0.25.10
-      load-tsconfig: 0.2.5
-
   bundle-require@5.1.0(esbuild@0.25.10):
     dependencies:
       esbuild: 0.25.10
@@ -19775,10 +19743,6 @@ snapshots:
       glob: 11.0.3
       package-json-from-dist: 1.0.1
 
-  rollup@3.29.5:
-    optionalDependencies:
-      fsevents: 2.3.3
-
   rollup@4.52.2:
     dependencies:
       '@types/estree': 1.0.8
@@ -20527,30 +20491,6 @@ snapshots:
       strip-bom: 3.0.0
 
   tslib@2.8.1: {}
-
-  tsup@7.2.0(@swc/core@1.13.5)(postcss@8.5.6)(typescript@5.9.3):
-    dependencies:
-      bundle-require: 4.2.1(esbuild@0.25.10)
-      cac: 6.7.14
-      chokidar: 4.0.3
-      debug: 4.4.3(supports-color@5.5.0)
-      esbuild: 0.25.10
-      execa: 5.1.1
-      globby: 11.1.0
-      joycon: 3.1.1
-      postcss-load-config: 4.0.2(postcss@8.5.6)
-      resolve-from: 5.0.0
-      rollup: 3.29.5
-      source-map: 0.8.0-beta.0
-      sucrase: 3.35.0
-      tree-kill: 1.2.2
-    optionalDependencies:
-      '@swc/core': 1.13.5
-      postcss: 8.5.6
-      typescript: 5.9.3
-    transitivePeerDependencies:
-      - supports-color
-      - ts-node
 
   tsup@8.5.0(@swc/core@1.13.5)(jiti@2.6.0)(postcss@8.5.6)(tsx@4.20.5)(typescript@5.9.3)(yaml@2.8.1):
     dependencies:
