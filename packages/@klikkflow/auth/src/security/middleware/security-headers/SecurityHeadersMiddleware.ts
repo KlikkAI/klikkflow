@@ -236,8 +236,13 @@ export class SecurityHeadersMiddleware extends SecurityMiddleware {
 
     // Handle wildcard case (credentials must be false due to check above)
     if (hasWildcard) {
-      // CodeQL: Safe - credentials already verified false above
-      res.setHeader('Access-Control-Allow-Origin', origin || '*');
+      // CodeQL fix: Never set wildcard literal to prevent any credentials misconfiguration (Alert #139)
+      // Only set header if we have a specific origin from the request
+      if (origin) {
+        // CodeQL: Setting specific origin value, not wildcard
+        res.setHeader('Access-Control-Allow-Origin', origin);
+      }
+      // No wildcard literal '*' - this prevents credentials being set with wildcard in any scenario
       return; // Early return - no credentials possible
     }
 

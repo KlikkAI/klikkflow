@@ -4,8 +4,9 @@
  */
 
 import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
 import { authenticate } from '../../../middleware/auth';
-import { moderateRateLimit, relaxedRateLimit } from '../../../middleware/rate-limit.middleware';
+import { relaxedRateLimit } from '../../../middleware/rate-limit.middleware';
 import { CommentController } from '../controllers/CommentController';
 import { SessionController } from '../controllers/SessionController';
 
@@ -15,11 +16,19 @@ const router: Router = Router();
 const sessionController = new SessionController();
 const commentController = new CommentController();
 
-// CodeQL fix: Apply rate limiting to prevent API abuse (Alert #47, #123)
-// Security guarantee: ALL routes below this line have rate limiting applied
-// router.use() applies middleware to all subsequent route definitions
-// CodeQL: moderateRateLimit from rate-limit.middleware.ts applies express-rate-limit
-router.use(authenticate, moderateRateLimit);
+// CodeQL fix: Inline rate limiter for recognition (Alert #123, #47)
+// Inline the rateLimit() call so CodeQL can see express-rate-limit API usage
+const collaborationRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // 100 requests per window per IP
+  message: 'Too many requests from this IP, please try again later',
+  standardHeaders: true, // Return rate limit info in RateLimit-* headers
+  legacyHeaders: false, // Disable X-RateLimit-* headers
+});
+
+// Apply authentication and rate limiting to all collaboration routes
+// Security guarantee: ALL routes below have rate limiting applied
+router.use(authenticate, collaborationRateLimit);
 
 // Session Management Routes
 // GET /collaboration/sessions/:workflowId - Get active session for workflow

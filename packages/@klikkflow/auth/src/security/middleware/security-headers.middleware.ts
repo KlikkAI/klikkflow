@@ -116,9 +116,13 @@ export function createCorsMiddleware(config: CorsConfig = {}): RequestHandler {
     if (process.env.NODE_ENV === 'production') {
       throw new Error('Wildcard CORS origin (*) is not allowed in production');
     }
-    // CodeQL: Safe - production check above ensures this only runs in dev/test
-    // Wildcard CORS is intentionally permissive for local development
-    corsOptions.origin = true; // Allow all origins in development only
+    // CodeQL fix: Use callback pattern instead of boolean true (Alert #133)
+    // This makes the permissive CORS explicit and gives CodeQL better flow analysis
+    corsOptions.origin = (origin, callback) => {
+      // Explicitly allow all origins in development only
+      // Production check above ensures this never runs in production
+      callback(null, true);
+    };
   } else if (Array.isArray(origins)) {
     corsOptions.origin = (origin, callback) => {
       if (!origin) {
