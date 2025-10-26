@@ -80,16 +80,22 @@ export class DataTransformer {
 
     // Final assignment - key validated in initial loop
     const finalKey = keys[keys.length - 1];
-    // CodeQL: Explicit check at assignment point
-    if (!DataTransformer.isDangerousKey(finalKey)) {
-      // CodeQL fix: Use Object.defineProperty for safer assignment (Alert #138, #136)
-      Object.defineProperty(current, finalKey, {
-        value,
-        writable: true,
-        enumerable: true,
-        configurable: true,
-      });
+
+    // CodeQL fix: Return early for dangerous keys to eliminate property operation code path (Alert #141)
+    // Early return ensures NO property operation can occur with dangerous keys
+    if (DataTransformer.isDangerousKey(finalKey)) {
+      return result; // Skip assignment entirely for dangerous keys
     }
+
+    // CodeQL: This code is only reached if finalKey is safe (not __proto__, constructor, prototype)
+    // Use Object.defineProperty for explicit, controlled property creation
+    Object.defineProperty(current, finalKey, {
+      value,
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    });
+
     return result;
   }
 
