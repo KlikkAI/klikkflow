@@ -249,7 +249,7 @@ router.get('/:id/metrics', relaxedRateLimit, async (req, res) => {
  */
 router.all('/webhook/*', webhookRateLimit, async (req, res) => {
   try {
-    const path = (req.params as string[])[0]; // Get the wildcard path
+    const path = req.params[0] as string; // Get the wildcard path
     const method = req.method;
     const headers = req.headers as Record<string, string>;
     const body = req.body;
