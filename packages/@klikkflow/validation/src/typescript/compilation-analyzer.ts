@@ -56,7 +56,7 @@ export class CompilationAnalyzer {
     const tsFiles = await this.getTypeScriptFiles(packageDir);
 
     // Create TypeScript program for the package
-    const { program, errors, warnings } = await this.createProgramForPackage(packageDir, tsFiles);
+    const { errors, warnings } = await this.createProgramForPackage(packageDir, tsFiles);
 
     const compilationTime = Date.now() - startTime;
     const finalMemory = process.memoryUsage().heapUsed;
@@ -66,7 +66,9 @@ export class CompilationAnalyzer {
     let incrementalBuildTime: number | undefined;
     try {
       incrementalBuildTime = await this.measureIncrementalBuild(packageDir);
-    } catch (_error) {}
+    } catch (_error) {
+      // Intentionally ignore - incremental build is optional
+    }
 
     return {
       packageName,
@@ -149,6 +151,11 @@ export class CompilationAnalyzer {
   private async measureIncrementalBuild(packageDir: string): Promise<number> {
     const packageName = this.getPackageName(packageDir);
 
+    // CodeQL fix: Validate package name to prevent command injection (Alert #97)
+    if (!/^@?[a-z0-9-]+\/[a-z0-9-]+$/.test(packageName)) {
+      throw new Error(`Invalid package name format: ${packageName}`);
+    }
+
     try {
       // Use turbo to measure incremental build if available
       const startTime = Date.now();
@@ -227,7 +234,9 @@ export class CompilationAnalyzer {
       try {
         const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
         return packageJson.name || path.basename(packageDir);
-      } catch (_error) {}
+      } catch (_error) {
+        // Intentionally ignore - fallback to directory basename
+      }
     }
 
     return path.basename(packageDir);

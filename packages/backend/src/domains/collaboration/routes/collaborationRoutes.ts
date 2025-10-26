@@ -5,7 +5,7 @@
 
 import { Router } from 'express';
 import { authenticate } from '../../../middleware/auth';
-import { relaxedRateLimit } from '../../../middleware/rate-limit.middleware';
+import { moderateRateLimit, relaxedRateLimit } from '../../../middleware/rate-limit.middleware';
 import { CommentController } from '../controllers/CommentController';
 import { SessionController } from '../controllers/SessionController';
 
@@ -15,8 +15,9 @@ const router: Router = Router();
 const sessionController = new SessionController();
 const commentController = new CommentController();
 
-// Apply authentication middleware to all collaboration routes
-router.use(authenticate);
+// CodeQL fix: Apply rate limiting to prevent API abuse (Alert #47)
+// Apply authentication and moderate rate limiting to all collaboration routes
+router.use(authenticate, moderateRateLimit);
 
 // Session Management Routes
 // GET /collaboration/sessions/:workflowId - Get active session for workflow

@@ -84,12 +84,13 @@ export class TestSuiteRunner implements ITestSuiteRunner {
 
     try {
       // Run tests for specific package using workspace filter
+      // CodeQL fix: Remove redundant string replacement (Alert #120)
       const testResult = await this.executeVitestCommand([
         'run',
         '--coverage',
         '--reporter=json',
         '--workspace',
-        `packages/${packageName.replace('@klikkflow/', '@klikkflow/')}`,
+        `packages/${packageName}`,
       ]);
 
       const results = await this.parseTestResults(testResult);
@@ -142,8 +143,9 @@ export class TestSuiteRunner implements ITestSuiteRunner {
       const packageCoverage: Record<string, number> = {};
 
       // Calculate package-specific coverage
+      // CodeQL fix: Remove redundant string replacement (Alert #121)
       for (const packageName of this.packages) {
-        const packagePath = `packages/${packageName.replace('@klikkflow/', '@klikkflow/')}/`;
+        const packagePath = `packages/${packageName}/`;
         const packageFiles = Object.keys(coverageData).filter((file) => file.includes(packagePath));
 
         if (packageFiles.length > 0) {
@@ -327,7 +329,7 @@ export class TestSuiteRunner implements ITestSuiteRunner {
    */
   private async generatePackageCoverageReport(packageName: string): Promise<CoverageReport> {
     try {
-      const packagePath = packageName.replace('@klikkflow/', '@klikkflow/');
+      // CodeQL fix: Remove redundant string replacement (Alert #122)
       const coveragePath = join(this.workspaceRoot, 'coverage', 'coverage-summary.json');
       const coverageData = await this.readCoverageFile(coveragePath);
 
@@ -336,7 +338,7 @@ export class TestSuiteRunner implements ITestSuiteRunner {
       }
 
       const packageFiles = Object.keys(coverageData).filter((file) =>
-        file.includes(`packages/${packagePath}/`)
+        file.includes(`packages/${packageName}/`)
       );
 
       if (packageFiles.length === 0) {

@@ -473,6 +473,15 @@ export class OperationalTransformService {
    */
   private setNestedProperty(obj: any, path: string, value: any): void {
     const keys = path.split('.');
+
+    // CodeQL fix: Validate keys to prevent prototype pollution (Alert #108)
+    const DANGEROUS_KEYS = ['__proto__', 'constructor', 'prototype'];
+    for (const key of keys) {
+      if (DANGEROUS_KEYS.includes(key)) {
+        throw new Error(`Dangerous property key detected: ${key}`);
+      }
+    }
+
     let current = obj;
 
     for (let i = 0; i < keys.length - 1; i++) {

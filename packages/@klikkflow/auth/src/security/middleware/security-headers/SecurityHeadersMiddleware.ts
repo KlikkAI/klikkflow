@@ -203,22 +203,40 @@ export class SecurityHeadersMiddleware extends SecurityMiddleware {
 
     // Handle preflight requests
     if (req.method === 'OPTIONS') {
-      if (cors?.methods) {
-        res.setHeader('Access-Control-Allow-Methods', cors.methods.join(', '));
-      }
-      if (cors?.headers) {
-        res.setHeader('Access-Control-Allow-Headers', cors.headers.join(', '));
-      }
-      if (cors?.maxAge) {
-        res.setHeader('Access-Control-Max-Age', cors.maxAge.toString());
-      }
+      this.handlePreflightRequest(cors, res);
     }
 
-    // Set CORS headers
-    if (cors?.origins?.includes('*') || (origin && cors?.origins?.includes(origin))) {
+    // Set CORS origin and credentials headers
+    this.setCORSOriginHeaders(cors, origin, res);
+  }
+
+  private handlePreflightRequest(cors: SecurityHeadersConfig['cors'], res: Response): void {
+    if (cors?.methods) {
+      res.setHeader('Access-Control-Allow-Methods', cors.methods.join(', '));
+    }
+    if (cors?.headers) {
+      res.setHeader('Access-Control-Allow-Headers', cors.headers.join(', '));
+    }
+    if (cors?.maxAge) {
+      res.setHeader('Access-Control-Max-Age', cors.maxAge.toString());
+    }
+  }
+
+  private setCORSOriginHeaders(
+    cors: SecurityHeadersConfig['cors'],
+    origin: string | undefined,
+    res: Response
+  ): void {
+    // CodeQL fix: Prevent credentials with wildcard origin (Alert #114)
+    const hasWildcard = cors?.origins?.includes('*');
+    if (hasWildcard && cors?.credentials) {
+      throw new Error('CORS misconfiguration: Cannot enable credentials with wildcard origin');
+    }
+
+    if (hasWildcard || (origin && cors?.origins?.includes(origin))) {
       res.setHeader('Access-Control-Allow-Origin', origin || '*');
     }
-    if (cors?.credentials) {
+    if (cors?.credentials && !hasWildcard) {
       res.setHeader('Access-Control-Allow-Credentials', 'true');
     }
   }

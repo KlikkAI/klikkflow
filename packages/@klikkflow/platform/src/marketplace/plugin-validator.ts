@@ -256,7 +256,8 @@ export class PluginValidator {
       }
 
       // Check for proper error handling
-      if (!/try\s*{[\s\S]*catch/gi.test(bundleContent)) {
+      // CodeQL fix: Use simpler test to prevent ReDoS (Alert #118)
+      if (!(bundleContent.includes('try') && bundleContent.includes('catch'))) {
         issues.push({
           severity: 'medium',
           category: 'quality',

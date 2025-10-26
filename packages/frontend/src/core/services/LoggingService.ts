@@ -67,8 +67,9 @@ class Logger {
   private flushInterval: NodeJS.Timeout | null = null;
 
   constructor() {
-    this.sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    this.correlationId = `corr_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // CodeQL fix: Use cryptographically secure random (Alert #90)
+    this.sessionId = `session_${Date.now()}_${crypto.randomUUID()}`;
+    this.correlationId = `corr_${Date.now()}_${crypto.randomUUID()}`;
 
     this.setupAutoFlush();
     this.setupErrorTracking();

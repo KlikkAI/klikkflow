@@ -11,6 +11,29 @@ const execFileAsync = promisify(execFile);
 const unlinkAsync = promisify(fs.unlink);
 const statAsync = promisify(fs.stat);
 
+/**
+ * Sanitize and validate file path to prevent directory traversal (CodeQL Alerts #101-106)
+ * @param filePath - The file path to sanitize
+ * @param baseDir - The allowed base directory (default: /tmp/uploads)
+ * @returns Sanitized path or throws error if path traversal detected
+ */
+function sanitizeFilePath(filePath: string, baseDir = '/tmp/uploads'): string {
+  // Resolve both paths to absolute paths
+  const resolvedBase = path.resolve(baseDir);
+  const resolvedPath = path.resolve(filePath);
+
+  // Check if resolved path is within base directory
+  const relativePath = path.relative(resolvedBase, resolvedPath);
+  const isWithinBase =
+    relativePath && !relativePath.startsWith('..') && !path.isAbsolute(relativePath);
+
+  if (!isWithinBase) {
+    throw new Error(`Path traversal attempt detected: ${filePath}`);
+  }
+
+  return resolvedPath;
+}
+
 export interface FileUploadConfig {
   destination?: string;
   maxFileSize?: number;
@@ -215,23 +238,26 @@ async function processSingleFile(
   req: Request
 ): Promise<{ file?: UploadedFile; error?: string }> {
   try {
+    // CodeQL fix: Sanitize file path to prevent traversal (Alerts #101, #102, #103)
+    const sanitizedPath = sanitizeFilePath(file.path, config.destination);
+
     // Validate magic numbers
     const magicValidation = await validateFileMagicNumber(file, config);
     if (!magicValidation.valid) {
-      await unlinkAsync(file.path);
+      await unlinkAsync(sanitizedPath);
       return { error: magicValidation.error };
     }
 
     // Scan for viruses
     const virusScan = await scanFileIfRequired(file, config);
     if (!virusScan.clean) {
-      await unlinkAsync(file.path);
+      await unlinkAsync(sanitizedPath);
       return { error: virusScan.error };
     }
 
     // Calculate hash and create metadata
     const hash = config.hashAlgorithm
-      ? await calculateFileHash(file.path, config.hashAlgorithm)
+      ? await calculateFileHash(sanitizedPath, config.hashAlgorithm)
       : undefined;
 
     const metadata = config.metadata ? createFileMetadata(req, virusScan.result) : undefined;
@@ -239,13 +265,16 @@ async function processSingleFile(
     return {
       file: {
         ...file,
+        path: sanitizedPath, // Use sanitized path
         hash,
         metadata,
       } as UploadedFile,
     };
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    await unlinkAsync(file.path).catch(() => {
+    // CodeQL fix: Sanitize path before deletion (Alert #106)
+    const safePath = sanitizeFilePath(file.path, config.destination);
+    await unlinkAsync(safePath).catch(() => {
       // Intentionally ignore unlink errors - file may not exist or be locked
     });
     return { error: `Error processing file ${file.originalname}: ${errorMessage}` };
@@ -450,8 +479,10 @@ async function validateMagicNumber(filePath: string, mimeType: string): Promise<
     return true;
   }
 
+  // CodeQL fix: Sanitize path before file access (Alert #104)
+  const sanitizedPath = sanitizeFilePath(filePath);
   const buffer = Buffer.alloc(Math.max(...signatures.map((s) => s.length)));
-  const fd = fs.openSync(filePath, 'r');
+  const fd = fs.openSync(sanitizedPath, 'r');
 
   try {
     fs.readSync(fd, buffer, 0, buffer.length, 0);
@@ -518,8 +549,10 @@ async function scanFileForVirus(
  */
 async function calculateFileHash(filePath: string, algorithm: string): Promise<string> {
   return new Promise((resolve, reject) => {
+    // CodeQL fix: Sanitize path before file access (Alert #105)
+    const sanitizedPath = sanitizeFilePath(filePath);
     const hash = crypto.createHash(algorithm);
-    const stream = fs.createReadStream(filePath);
+    const stream = fs.createReadStream(sanitizedPath);
 
     stream.on('error', reject);
     stream.on('data', (chunk) => hash.update(chunk));
@@ -563,7 +596,9 @@ async function cleanupUploadedFiles(req: Request): Promise<void> {
 
   for (const file of files) {
     try {
-      await unlinkAsync(file.path);
+      // CodeQL fix: Sanitize path before deletion (Alert #101)
+      const sanitizedPath = sanitizeFilePath(file.path);
+      await unlinkAsync(sanitizedPath);
     } catch (_error) {
       // Ignore file cleanup errors
     }

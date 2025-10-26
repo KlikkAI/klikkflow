@@ -18,20 +18,27 @@ export class AppError extends Error {
 }
 
 // MongoDB CastError handler
+// biome-ignore lint/suspicious/noExplicitAny: Error handler accepts generic MongoDB errors
 const handleCastErrorDB = (err: any) => {
   const message = `Invalid ${err.path}: ${err.value}`;
   return new AppError(message, 400);
 };
 
 // MongoDB Duplicate field error handler
+// biome-ignore lint/suspicious/noExplicitAny: Error handler accepts generic MongoDB errors
 const handleDuplicateFieldsDB = (err: any) => {
-  const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
+  // CodeQL fix: Avoid ReDoS with simpler extraction (Alert #115)
+  // Extract value between quotes without nested quantifiers
+  const match = err.errmsg.match(/["']([^"']*)["']/);
+  const value = match ? match[0] : 'unknown';
   const message = `Duplicate field value: ${value}. Please use another value!`;
   return new AppError(message, 400);
 };
 
 // MongoDB ValidationError handler
+// biome-ignore lint/suspicious/noExplicitAny: Error handler accepts generic MongoDB errors
 const handleValidationErrorDB = (err: any) => {
+  // biome-ignore lint/suspicious/noExplicitAny: Mapping error values to messages
   const errors = Object.values(err.errors).map((el: any) => el.message);
   const message = `Invalid input data. ${errors.join('. ')}`;
   return new AppError(message, 400);
@@ -45,6 +52,7 @@ const handleJWTExpiredError = () =>
   new AppError('Your token has expired! Please log in again.', 401);
 
 // Send error in development
+// biome-ignore lint/suspicious/noExplicitAny: Error handler accepts generic errors
 const sendErrorDev = (err: any, res: Response) => {
   res.status(err.statusCode).json({
     success: false,
@@ -55,6 +63,7 @@ const sendErrorDev = (err: any, res: Response) => {
 };
 
 // Send error in production
+// biome-ignore lint/suspicious/noExplicitAny: Error handler accepts generic errors
 const sendErrorProd = (err: any, res: Response) => {
   // Operational, trusted error: send message to client
   if (err.isOperational) {
@@ -81,6 +90,7 @@ export const catchAsync = (fn: Function) => {
 };
 
 // Global error handler middleware
+// biome-ignore lint/suspicious/noExplicitAny: Global error handler must accept any error type
 export const errorHandler = (err: any, _req: Request, res: Response, _next: NextFunction) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';

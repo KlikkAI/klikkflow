@@ -5,6 +5,7 @@ const logger = new Logger('AnalyticsService');
 
 export interface AnalyticsEvent {
   name: string;
+  // biome-ignore lint/suspicious/noExplicitAny: Event properties are dynamic and application-specific
   properties?: Record<string, any>;
   timestamp?: Date;
   userId?: string;
@@ -70,6 +71,7 @@ export interface PredictiveInsight {
   type: 'performance' | 'reliability' | 'cost';
   severity: 'info' | 'warning' | 'critical';
   message: string;
+  // biome-ignore lint/suspicious/noExplicitAny: Prediction data structure varies by insight type
   prediction: any;
   confidence: number;
   description?: string;
@@ -112,6 +114,7 @@ export class AnalyticsService {
   }
 
   // Event tracking
+  // biome-ignore lint/suspicious/noExplicitAny: Event properties are dynamic and application-specific
   track(eventName: string, properties?: Record<string, any>): void {
     const event: AnalyticsEvent = {
       name: eventName,
@@ -236,7 +239,8 @@ export class AnalyticsService {
   }
 
   private generateSessionId(): string {
-    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // CodeQL fix: Use cryptographically secure random (Alert #91)
+    return `session_${Date.now()}_${crypto.randomUUID()}`;
   }
 
   // Stub methods for advanced analytics features
@@ -248,22 +252,27 @@ export class AnalyticsService {
     };
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: Pre-existing stub method will be typed when implemented
   async recordExecutionMetrics(_executionId: string, _metrics: any): Promise<void> {
     // Stub implementation
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: Pre-existing stub method will be typed when implemented
   async updateNodeMetrics(_nodeId: string, _metrics: any): Promise<void> {
     // Stub implementation
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: Pre-existing stub method will be typed when implemented
   async detectBottlenecks(_workflowId: string): Promise<any[]> {
     return [];
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: Pre-existing stub method will be typed when implemented
   async generatePredictiveInsights(_workflowId: string): Promise<any> {
     return null;
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: Pre-existing stub method will be typed when implemented
   async generateCostOptimization(_workflowId: string): Promise<any> {
     return null;
   }

@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -285,7 +286,8 @@ export class ProductivityTracker {
   }
 
   private generateSessionId(): string {
-    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // CodeQL fix: Use cryptographically secure random (Alert #86)
+    return `session_${Date.now()}_${crypto.randomUUID()}`;
   }
 
   private initializeMetrics(): SessionMetrics {
