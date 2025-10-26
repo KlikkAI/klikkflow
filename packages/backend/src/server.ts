@@ -26,15 +26,45 @@ dbConfig
     process.exit(1);
   });
 
+// CORS configuration with security validation
+const getAllowedOrigins = (): string[] => {
+  const defaultOrigins = ['http://localhost:3000', 'http://localhost:3002'];
+
+  if (!process.env.CORS_ORIGIN) {
+    // In production, require explicit CORS_ORIGIN configuration
+    if (process.env.NODE_ENV === 'production') {
+      console.warn('WARNING: CORS_ORIGIN not set in production environment');
+    }
+    return defaultOrigins;
+  }
+
+  const origins = process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim());
+
+  // Validate origins - reject wildcards and non-HTTP(S) origins
+  const validOrigins = origins.filter((origin) => {
+    if (origin === '*') {
+      console.error('ERROR: Wildcard (*) origin not allowed with credentials');
+      return false;
+    }
+    if (!(origin.startsWith('http://') || origin.startsWith('https://'))) {
+      console.error(`ERROR: Invalid origin protocol: ${origin}`);
+      return false;
+    }
+    return true;
+  });
+
+  return validOrigins.length > 0 ? validOrigins : defaultOrigins;
+};
+
 // Middleware
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN?.split(',') || [
-      'http://localhost:3000',
-      'http://localhost:3002',
-    ],
+    origin: getAllowedOrigins(),
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    maxAge: 86400, // 24 hours
   })
 );
 app.use(compression());
