@@ -31,6 +31,7 @@ export interface CredentialRotationPolicy {
 
 export class CredentialManager {
   private credentials = new Map<string, Credential>();
+  private masterKey: string;
 
   constructor(masterKey: string) {
     this.masterKey = masterKey;
