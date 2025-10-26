@@ -1,14 +1,6 @@
 import type { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';
-import type { ZodSchema } from 'zod';
-import { z } from 'zod';
-import type {
-  ApiError,
-  ApiResponse,
-  ErrorResponseSchema,
-  PaginatedResponse,
-  PaginationParams,
-} from '../schemas';
+import type { ApiError, ApiResponse, PaginatedResponse, PaginationParams } from '../schemas';
 import { configService } from '../services/ConfigService';
 import { logger } from '../services/LoggingService';
 
@@ -27,16 +19,6 @@ export class ApiClientError extends Error {
   }
 }
 
-export class ValidationError extends ApiClientError {
-  public validationErrors: z.ZodError;
-
-  constructor(message: string, validationErrors: z.ZodError) {
-    super(message, 400, 'VALIDATION_ERROR', validationErrors.issues);
-    this.name = 'ValidationError';
-    this.validationErrors = validationErrors;
-  }
-}
-
 // Request/Response interceptor types
 interface RequestContext {
   startTime: number;
@@ -45,10 +27,9 @@ interface RequestContext {
 }
 
 /**
- * Type-safe API Client with Zod validation
+ * Type-safe API Client
  *
  * Features:
- * - Runtime response validation with Zod schemas
  * - Centralized error handling with structured logging
  * - Automatic authentication token management
  * - Request/response interceptors with performance tracking
@@ -249,83 +230,60 @@ export class ApiClient {
   }
 
   /**
-   * Generic GET request with schema validation
+   * Generic GET request
    */
-  async get<T>(
-    endpoint: string,
-    schema: ZodSchema<ApiResponse<T>>,
-    config?: AxiosRequestConfig
-  ): Promise<T> {
+  async get<T>(endpoint: string, config?: AxiosRequestConfig): Promise<T> {
     try {
       const response = await this.client.get(endpoint, config);
-      return this.validateAndExtractData(response, schema);
+      return this.extractData<T>(response);
     } catch (error) {
       throw this.handleRequestError(error);
     }
   }
 
   /**
-   * Generic POST request with schema validation
+   * Generic POST request
    */
-  async post<T, D = unknown>(
-    endpoint: string,
-    data: D,
-    schema: ZodSchema<ApiResponse<T>>,
-    config?: AxiosRequestConfig
-  ): Promise<T> {
+  async post<T, D = unknown>(endpoint: string, data: D, config?: AxiosRequestConfig): Promise<T> {
     try {
       const response = await this.client.post(endpoint, data, config);
-      return this.validateAndExtractData(response, schema);
+      return this.extractData<T>(response);
     } catch (error) {
       throw this.handleRequestError(error);
     }
   }
 
   /**
-   * Generic PUT request with schema validation
+   * Generic PUT request
    */
-  async put<T, D = unknown>(
-    endpoint: string,
-    data: D,
-    schema: ZodSchema<ApiResponse<T>>,
-    config?: AxiosRequestConfig
-  ): Promise<T> {
+  async put<T, D = unknown>(endpoint: string, data: D, config?: AxiosRequestConfig): Promise<T> {
     try {
       const response = await this.client.put(endpoint, data, config);
-      return this.validateAndExtractData(response, schema);
+      return this.extractData<T>(response);
     } catch (error) {
       throw this.handleRequestError(error);
     }
   }
 
   /**
-   * Generic PATCH request with schema validation
+   * Generic PATCH request
    */
-  async patch<T, D = unknown>(
-    endpoint: string,
-    data: D,
-    schema: ZodSchema<ApiResponse<T>>,
-    config?: AxiosRequestConfig
-  ): Promise<T> {
+  async patch<T, D = unknown>(endpoint: string, data: D, config?: AxiosRequestConfig): Promise<T> {
     try {
       const response = await this.client.patch(endpoint, data, config);
-      return this.validateAndExtractData(response, schema);
+      return this.extractData<T>(response);
     } catch (error) {
       throw this.handleRequestError(error);
     }
   }
 
   /**
-   * Generic DELETE request with schema validation
+   * Generic DELETE request
    */
-  async delete<T>(
-    endpoint: string,
-    schema: ZodSchema<ApiResponse<T>>,
-    config?: AxiosRequestConfig
-  ): Promise<T> {
+  async delete<T>(endpoint: string, config?: AxiosRequestConfig): Promise<T> {
     try {
       const response = await this.client.delete(endpoint, config);
-      return this.validateAndExtractData(response, schema);
+      return this.extractData<T>(response);
     } catch (error) {
       throw this.handleRequestError(error);
     }
@@ -336,46 +294,17 @@ export class ApiClient {
    */
   async getPaginated<T>(
     endpoint: string,
-    schema: ZodSchema<ApiResponse<PaginatedResponse<T>>>,
     params?: PaginationParams & Record<string, unknown>
   ): Promise<PaginatedResponse<T>> {
-    return this.get(endpoint, schema, { params });
+    return this.get(endpoint, { params });
   }
 
   /**
-   * Validate response against schema and extract data
+   * Extract data from response
    */
-  private validateAndExtractData<T>(response: AxiosResponse, schema: ZodSchema<ApiResponse<T>>): T {
-    try {
-      // First validate the response structure
-      const validatedResponse = schema.parse(response.data);
-
-      // Check if the API response indicates success
-      if (!validatedResponse.success) {
-        // Type guard: if success is false, it's an ErrorResponse
-        const errorResponse = validatedResponse as unknown as z.infer<typeof ErrorResponseSchema>;
-        throw new ApiClientError(
-          errorResponse.error || validatedResponse.message || 'API request failed',
-          response.status,
-          'API_ERROR',
-          errorResponse.details
-        );
-      }
-
-      return validatedResponse.data;
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const validationError = new Error('Response validation failed');
-        logger.error('API Response Validation Failed', validationError);
-        logger.info('Validation Error Details', {
-          validationErrors: error.issues,
-          responseData: response.data,
-        });
-
-        throw new ValidationError('Response validation failed', error);
-      }
-      throw error;
-    }
+  private extractData<T>(response: AxiosResponse): T {
+    // Extract data from response, supporting both direct data and wrapped data
+    return (response.data?.data ?? response.data) as T;
   }
 
   /**
@@ -383,10 +312,6 @@ export class ApiClient {
    */
   private handleRequestError(error: unknown): ApiClientError {
     if (error instanceof ApiClientError) {
-      return error;
-    }
-
-    if (error instanceof ValidationError) {
       return error;
     }
 

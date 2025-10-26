@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import type {
   CreateWorkflowRequest,
   ExecuteWorkflowRequest,
@@ -11,13 +10,6 @@ import type {
   WorkflowDefinition,
   WorkflowExecution,
   WorkflowFilter,
-} from '../schemas';
-import {
-  ApiResponseSchema,
-  ExecutionListResponseSchema,
-  ExecutionResponseSchema,
-  ExecutionStatsResponseSchema,
-  WorkflowResponseSchema,
 } from '../schemas';
 import { ApiClientError, apiClient } from './ApiClient';
 
@@ -95,11 +87,7 @@ export class WorkflowApiService {
    */
   async getWorkflow(workflowId: string): Promise<Workflow> {
     try {
-      const response: any = await apiClient.get(
-        `/workflows/${workflowId}`,
-        WorkflowResponseSchema as any
-      );
-
+      const response: any = await apiClient.get(`/workflows/${workflowId}`);
       return response.workflow;
     } catch (error) {
       throw new ApiClientError(
@@ -116,14 +104,7 @@ export class WorkflowApiService {
    */
   async createWorkflow(workflow: CreateWorkflowRequest): Promise<Workflow> {
     try {
-      // WorkflowResponseSchema now handles nested structure extraction
-      const response: any = await apiClient.post(
-        '/workflows',
-        workflow,
-        WorkflowResponseSchema as any
-      );
-
-      // Response is already in the correct format
+      const response: any = await apiClient.post('/workflows', workflow);
       return response.workflow;
     } catch (error) {
       throw new ApiClientError('Failed to create workflow', 0, 'WORKFLOW_CREATE_ERROR', error);
@@ -138,14 +119,7 @@ export class WorkflowApiService {
     updates: Omit<UpdateWorkflowRequest, 'id'>
   ): Promise<Workflow> {
     try {
-      // WorkflowResponseSchema now handles nested structure extraction
-      const response: any = await apiClient.put(
-        `/workflows/${workflowId}`,
-        updates,
-        WorkflowResponseSchema as any
-      );
-
-      // Response is already in the correct format
+      const response: any = await apiClient.put(`/workflows/${workflowId}`, updates);
       return response.workflow;
     } catch (error) {
       throw new ApiClientError(
@@ -162,10 +136,7 @@ export class WorkflowApiService {
    */
   async deleteWorkflow(workflowId: string): Promise<{ message: string }> {
     try {
-      return await apiClient.delete(
-        `/workflows/${workflowId}`,
-        ApiResponseSchema(z.object({ message: z.string() })) as any
-      );
+      return await apiClient.delete(`/workflows/${workflowId}`);
     } catch (error) {
       throw new ApiClientError(
         `Failed to delete workflow ${workflowId}`,
@@ -181,11 +152,7 @@ export class WorkflowApiService {
    */
   async toggleWorkflow(workflowId: string, isActive: boolean): Promise<Workflow> {
     try {
-      const response: any = await apiClient.patch(
-        `/workflows/${workflowId}`,
-        { isActive },
-        WorkflowResponseSchema as any
-      );
+      const response: any = await apiClient.patch(`/workflows/${workflowId}`, { isActive });
       return response.workflow;
     } catch (error) {
       throw new ApiClientError(
@@ -202,11 +169,9 @@ export class WorkflowApiService {
    */
   async duplicateWorkflow(workflowId: string, newName?: string): Promise<Workflow> {
     try {
-      const response: any = await apiClient.post(
-        `/workflows/${workflowId}/duplicate`,
-        { name: newName },
-        WorkflowResponseSchema as any
-      );
+      const response: any = await apiClient.post(`/workflows/${workflowId}/duplicate`, {
+        name: newName,
+      });
       return response.workflow;
     } catch (error) {
       throw new ApiClientError(
@@ -229,25 +194,17 @@ export class WorkflowApiService {
     try {
       if (request.workflowId) {
         // Execute saved workflow
-        return await apiClient.post(
-          `/workflows/${request.workflowId}/execute`,
-          {
-            triggerData: request.triggerData,
-            options: request.options,
-          },
-          ExecutionResponseSchema as any
-        );
+        return await apiClient.post(`/workflows/${request.workflowId}/execute`, {
+          triggerData: request.triggerData,
+          options: request.options,
+        });
       } else if (request.workflow) {
         // Execute workflow definition directly
-        return await apiClient.post(
-          '/workflows/execute',
-          {
-            workflow: request.workflow,
-            triggerData: request.triggerData,
-            options: request.options,
-          },
-          ExecutionResponseSchema as any
-        );
+        return await apiClient.post('/workflows/execute', {
+          workflow: request.workflow,
+          triggerData: request.triggerData,
+          options: request.options,
+        });
       } else {
         throw new ApiClientError(
           'Either workflowId or workflow definition must be provided',
@@ -270,18 +227,7 @@ export class WorkflowApiService {
     estimatedDuration?: number | undefined;
   }> {
     try {
-      return await apiClient.post(
-        '/workflows/test',
-        { workflow, options: { dryRun: true } },
-        ApiResponseSchema(
-          z.object({
-            isValid: z.boolean(),
-            errors: z.array(z.string()),
-            warnings: z.array(z.string()),
-            estimatedDuration: z.number().optional(),
-          })
-        ) as any
-      );
+      return await apiClient.post('/workflows/test', { workflow, options: { dryRun: true } });
     } catch (error) {
       throw new ApiClientError('Failed to test workflow', 0, 'WORKFLOW_TEST_ERROR', error);
     }
@@ -292,11 +238,7 @@ export class WorkflowApiService {
    */
   async stopExecution(executionId: string): Promise<{ message: string }> {
     try {
-      return await apiClient.post(
-        `/workflows/executions/${executionId}/stop`,
-        {},
-        ApiResponseSchema(z.object({ message: z.string() })) as any
-      );
+      return await apiClient.post(`/workflows/executions/${executionId}/stop`, {});
     } catch (error) {
       throw new ApiClientError(
         `Failed to stop execution ${executionId}`,
@@ -312,10 +254,7 @@ export class WorkflowApiService {
    */
   async getExecution(executionId: string): Promise<WorkflowExecution> {
     try {
-      return await apiClient.get(
-        `/workflows/executions/${executionId}`,
-        ExecutionResponseSchema as any
-      );
+      return await apiClient.get(`/workflows/executions/${executionId}`);
     } catch (error) {
       throw new ApiClientError(
         `Failed to fetch execution ${executionId}`,
@@ -333,11 +272,7 @@ export class WorkflowApiService {
     filter?: ExecutionFilter & PaginationParams
   ): Promise<PaginatedResponse<WorkflowExecution>> {
     try {
-      return await apiClient.getPaginated(
-        '/workflows/executions',
-        ExecutionListResponseSchema as any,
-        filter
-      );
+      return await apiClient.getPaginated('/workflows/executions', filter);
     } catch (error) {
       throw new ApiClientError('Failed to fetch executions', 0, 'EXECUTIONS_FETCH_ERROR', error);
     }
@@ -348,13 +283,9 @@ export class WorkflowApiService {
    */
   async getExecutionStats(workflowId?: string): Promise<ExecutionStats> {
     try {
-      return await apiClient.get(
-        '/workflows/executions/stats',
-        ExecutionStatsResponseSchema as any,
-        {
-          params: workflowId ? { workflowId } : undefined,
-        }
-      );
+      return await apiClient.get('/workflows/executions/stats', {
+        params: workflowId ? { workflowId } : undefined,
+      });
     } catch (error) {
       throw new ApiClientError(
         'Failed to fetch execution statistics',
@@ -382,22 +313,9 @@ export class WorkflowApiService {
     }>
   > {
     try {
-      return await apiClient.get(
-        `/workflows/executions/${executionId}/logs`,
-        ApiResponseSchema(
-          z.array(
-            z.object({
-              timestamp: z.string(),
-              level: z.enum(['info', 'warn', 'error', 'debug']),
-              message: z.string(),
-              nodeId: z.string().optional(),
-              nodeName: z.string().optional(),
-              data: z.unknown().optional(),
-            })
-          )
-        ) as any,
-        { params: nodeId ? { nodeId } : undefined }
-      );
+      return await apiClient.get(`/workflows/executions/${executionId}/logs`, {
+        params: nodeId ? { nodeId } : undefined,
+      });
     } catch (error) {
       throw new ApiClientError(
         `Failed to fetch execution logs for ${executionId}`,
@@ -426,21 +344,7 @@ export class WorkflowApiService {
     }>
   > {
     try {
-      return await apiClient.get(
-        '/workflows/templates',
-        ApiResponseSchema(
-          z.array(
-            z.object({
-              id: z.string(),
-              name: z.string(),
-              description: z.string(),
-              category: z.string(),
-              tags: z.array(z.string()),
-              definition: z.any(), // WorkflowDefinitionSchema would cause circular ref
-            })
-          )
-        ) as any
-      );
+      return await apiClient.get('/workflows/templates');
     } catch (error) {
       throw new ApiClientError(
         'Failed to fetch workflow templates',
@@ -463,17 +367,7 @@ export class WorkflowApiService {
     contentType: string;
   }> {
     try {
-      return await apiClient.get(
-        `/workflows/${workflowId}/export`,
-        ApiResponseSchema(
-          z.object({
-            data: z.string(),
-            filename: z.string(),
-            contentType: z.string(),
-          })
-        ) as any,
-        { params: { format } }
-      );
+      return await apiClient.get(`/workflows/${workflowId}/export`, { params: { format } });
     } catch (error) {
       throw new ApiClientError(
         `Failed to export workflow ${workflowId}`,
@@ -489,11 +383,7 @@ export class WorkflowApiService {
    */
   async importWorkflow(data: string, format: 'json' | 'yaml' = 'json'): Promise<Workflow> {
     try {
-      const response: any = await apiClient.post(
-        '/workflows/import',
-        { data, format },
-        WorkflowResponseSchema as any
-      );
+      const response: any = await apiClient.post('/workflows/import', { data, format });
       return response.workflow;
     } catch (error) {
       throw new ApiClientError('Failed to import workflow', 0, 'WORKFLOW_IMPORT_ERROR', error);

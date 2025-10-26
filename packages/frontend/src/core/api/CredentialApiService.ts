@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import type {
   CreateCredentialRequest,
   Credential,
@@ -12,15 +11,6 @@ import type {
   PaginatedResponse,
   PaginationParams,
   UpdateCredentialRequest,
-} from '../schemas';
-import {
-  ApiResponseSchema,
-  CredentialListResponseSchema,
-  CredentialResponseSchema,
-  CredentialStatsResponseSchema,
-  CredentialTestResponseSchema,
-  OAuth2InitResponseSchema,
-  OAuth2TokenSchema,
 } from '../schemas';
 import type { CredentialTypeApiResponse } from '../types/credentials';
 import { ApiClientError, apiClient } from './ApiClient';
@@ -43,13 +33,9 @@ export class CredentialApiService {
     filter?: CredentialFilter & PaginationParams
   ): Promise<PaginatedResponse<Credential>> {
     try {
-      const response: any = await apiClient.get(
-        '/credentials',
-        CredentialListResponseSchema as any,
-        {
-          params: filter,
-        }
-      );
+      const response: any = await apiClient.get('/credentials', {
+        params: filter,
+      });
 
       // Convert backend response to PaginatedResponse format
       return {
@@ -71,7 +57,7 @@ export class CredentialApiService {
    */
   async getCredential(credentialId: string): Promise<Credential> {
     try {
-      return await apiClient.get(`/credentials/${credentialId}`, CredentialResponseSchema as any);
+      return await apiClient.get(`/credentials/${credentialId}`);
     } catch (error) {
       throw new ApiClientError(
         `Failed to fetch credential ${credentialId}`,
@@ -87,7 +73,7 @@ export class CredentialApiService {
    */
   async createCredential(credential: CreateCredentialRequest): Promise<Credential> {
     try {
-      return await apiClient.post('/credentials', credential, CredentialResponseSchema as any);
+      return await apiClient.post('/credentials', credential);
     } catch (error) {
       throw new ApiClientError('Failed to create credential', 0, 'CREDENTIAL_CREATE_ERROR', error);
     }
@@ -101,11 +87,7 @@ export class CredentialApiService {
     updates: Omit<UpdateCredentialRequest, 'id'>
   ): Promise<Credential> {
     try {
-      return await apiClient.put(
-        `/credentials/${credentialId}`,
-        updates,
-        CredentialResponseSchema as any
-      );
+      return await apiClient.put(`/credentials/${credentialId}`, updates);
     } catch (error) {
       throw new ApiClientError(
         `Failed to update credential ${credentialId}`,
@@ -121,10 +103,7 @@ export class CredentialApiService {
    */
   async deleteCredential(credentialId: string): Promise<{ message: string }> {
     try {
-      return await apiClient.delete(
-        `/credentials/${credentialId}`,
-        ApiResponseSchema(z.object({ message: z.string() })) as any
-      );
+      return await apiClient.delete(`/credentials/${credentialId}`);
     } catch (error) {
       throw new ApiClientError(
         `Failed to delete credential ${credentialId}`,
@@ -148,14 +127,10 @@ export class CredentialApiService {
     additionalParams?: Record<string, unknown>
   ): Promise<CredentialTestResult> {
     try {
-      return await apiClient.post(
-        `/credentials/${credentialId}/test`,
-        {
-          testType,
-          additionalParams: additionalParams || {},
-        },
-        CredentialTestResponseSchema as any
-      );
+      return await apiClient.post(`/credentials/${credentialId}/test`, {
+        testType,
+        additionalParams: additionalParams || {},
+      });
     } catch (error) {
       throw new ApiClientError(
         `Failed to test credential ${credentialId}`,
@@ -171,11 +146,7 @@ export class CredentialApiService {
    */
   async testCredentialConfig(config: CredentialConfig): Promise<CredentialTestResult> {
     try {
-      return await apiClient.post(
-        '/credentials/test-config',
-        config,
-        CredentialTestResponseSchema as any
-      );
+      return await apiClient.post('/credentials/test-config', config);
     } catch (error) {
       throw new ApiClientError(
         'Failed to test credential configuration',
@@ -191,11 +162,7 @@ export class CredentialApiService {
    */
   async refreshCredential(credentialId: string): Promise<Credential> {
     try {
-      return await apiClient.post(
-        `/credentials/${credentialId}/refresh`,
-        {},
-        CredentialResponseSchema as any
-      );
+      return await apiClient.post(`/credentials/${credentialId}/refresh`, {});
     } catch (error) {
       throw new ApiClientError(
         `Failed to refresh credential ${credentialId}`,
@@ -218,11 +185,7 @@ export class CredentialApiService {
     state: string;
   }> {
     try {
-      return await apiClient.post(
-        '/credentials/oauth2/init',
-        request,
-        OAuth2InitResponseSchema as any
-      );
+      return await apiClient.post('/credentials/oauth2/init', request);
     } catch (error) {
       throw new ApiClientError('Failed to initiate OAuth2 flow', 0, 'OAUTH2_INIT_ERROR', error);
     }
@@ -233,11 +196,7 @@ export class CredentialApiService {
    */
   async handleOAuth2Callback(request: OAuth2CallbackRequest): Promise<OAuth2TokenResponse> {
     try {
-      return await apiClient.post(
-        '/credentials/oauth2/callback',
-        request,
-        OAuth2TokenSchema as any
-      );
+      return await apiClient.post('/credentials/oauth2/callback', request);
     } catch (error) {
       throw new ApiClientError(
         'Failed to handle OAuth2 callback',
@@ -253,11 +212,7 @@ export class CredentialApiService {
    */
   async revokeOAuth2(credentialId: string): Promise<{ message: string }> {
     try {
-      return await apiClient.post(
-        `/credentials/${credentialId}/revoke`,
-        {},
-        ApiResponseSchema(z.object({ message: z.string() })) as any
-      );
+      return await apiClient.post(`/credentials/${credentialId}/revoke`, {});
     } catch (error) {
       throw new ApiClientError(
         `Failed to revoke OAuth2 tokens for credential ${credentialId}`,
@@ -280,20 +235,14 @@ export class CredentialApiService {
     state: string;
   }> {
     try {
-      const response = await apiClient.post(
+      const response = await apiClient.post<{ authUrl: string; state: string }>(
         '/oauth/gmail/initiate',
         {
           credentialName,
           returnUrl: returnUrl || window.location.href,
-        },
-        ApiResponseSchema(
-          z.object({
-            authUrl: z.string(),
-            state: z.string(),
-          })
-        ) as any
+        }
       );
-      return response as { authUrl: string; state: string };
+      return response;
     } catch (error) {
       throw new ApiClientError(
         'Failed to initiate Gmail OAuth:',
@@ -328,20 +277,10 @@ export class CredentialApiService {
     message: string;
   }> {
     try {
-      return await apiClient.post(
-        `/credentials/${credentialId}/test-gmail`,
-        {
-          action: 'fetchEmails',
-          filters,
-        },
-        ApiResponseSchema(
-          z.object({
-            success: z.boolean(),
-            data: z.array(z.any()).optional(),
-            message: z.string(),
-          })
-        ) as any
-      );
+      return await apiClient.post(`/credentials/${credentialId}/test-gmail`, {
+        action: 'fetchEmails',
+        filters,
+      });
     } catch (error) {
       throw new ApiClientError('Failed to test Gmail node:', 0, 'GMAIL_NODE_TEST_ERROR', error);
     }
@@ -352,16 +291,7 @@ export class CredentialApiService {
    */
   async revokeGmailAccess(credentialId: string): Promise<{ success: boolean; message: string }> {
     try {
-      return await apiClient.post(
-        `/credentials/${credentialId}/revoke`,
-        {},
-        ApiResponseSchema(
-          z.object({
-            success: z.boolean(),
-            message: z.string(),
-          })
-        ) as any
-      );
+      return await apiClient.post(`/credentials/${credentialId}/revoke`, {});
     } catch (error) {
       throw new ApiClientError(
         'Failed to revoke Gmail access:',
@@ -381,32 +311,7 @@ export class CredentialApiService {
    */
   async getCredentialTypes(): Promise<CredentialTypeApiResponse[]> {
     try {
-      return await apiClient.get(
-        '/credentials/types',
-        ApiResponseSchema(
-          z.array(
-            z.object({
-              type: z.string(),
-              name: z.string(),
-              description: z.string(),
-              category: z.string(),
-              fields: z.array(
-                z.object({
-                  name: z.string(),
-                  type: z.string(),
-                  required: z.boolean(),
-                  description: z.string(),
-                  placeholder: z.string().optional(),
-                  validation: z.record(z.string(), z.unknown()).optional(),
-                })
-              ),
-              supportsOAuth2: z.boolean(),
-              supportsTest: z.boolean(),
-              integrations: z.array(z.string()),
-            })
-          )
-        ) as any
-      );
+      return await apiClient.get('/credentials/types');
     } catch (error) {
       throw new ApiClientError(
         'Failed to fetch credential types',
@@ -506,7 +411,7 @@ export class CredentialApiService {
    */
   async getCredentialStats(): Promise<CredentialStats> {
     try {
-      return await apiClient.get('/credentials/stats', CredentialStatsResponseSchema as any);
+      return await apiClient.get('/credentials/stats');
     } catch (error) {
       throw new ApiClientError(
         'Failed to fetch credential statistics',
@@ -539,23 +444,7 @@ export class CredentialApiService {
     }>
   > {
     try {
-      return await apiClient.get(
-        `/credentials/${credentialId}/usage`,
-        ApiResponseSchema(
-          z.array(
-            z.object({
-              id: z.string(),
-              usedAt: z.string(),
-              workflowId: z.string().optional(),
-              nodeId: z.string().optional(),
-              action: z.string(),
-              success: z.boolean(),
-              details: z.unknown().optional(),
-            })
-          )
-        ) as any,
-        { params }
-      );
+      return await apiClient.get(`/credentials/${credentialId}/usage`, { params });
     } catch (error) {
       throw new ApiClientError(
         `Failed to fetch usage logs for credential ${credentialId}`,
@@ -580,22 +469,7 @@ export class CredentialApiService {
     }>
   > {
     try {
-      return await apiClient.post(
-        '/credentials/health-check',
-        { credentialIds },
-        ApiResponseSchema(
-          z.array(
-            z.object({
-              credentialId: z.string(),
-              name: z.string(),
-              type: z.string(),
-              isHealthy: z.boolean(),
-              lastChecked: z.string(),
-              issues: z.array(z.string()).optional(),
-            })
-          )
-        ) as any
-      );
+      return await apiClient.post('/credentials/health-check', { credentialIds });
     } catch (error) {
       throw new ApiClientError(
         'Failed to check credential health',
@@ -620,11 +494,7 @@ export class CredentialApiService {
     }>
   ): Promise<Array<Credential>> {
     try {
-      return await apiClient.post(
-        '/credentials/bulk-update',
-        { updates },
-        ApiResponseSchema(z.array(z.any())) as any // Use any for now to avoid circular refs
-      );
+      return await apiClient.post('/credentials/bulk-update', { updates });
     } catch (error) {
       throw new ApiClientError(
         'Failed to bulk update credentials',
@@ -643,21 +513,7 @@ export class CredentialApiService {
     failed: Array<{ id: string; error: string }>;
   }> {
     try {
-      return await apiClient.post(
-        '/credentials/bulk-delete',
-        { credentialIds },
-        ApiResponseSchema(
-          z.object({
-            deleted: z.number(),
-            failed: z.array(
-              z.object({
-                id: z.string(),
-                error: z.string(),
-              })
-            ),
-          })
-        ) as any
-      );
+      return await apiClient.post('/credentials/bulk-delete', { credentialIds });
     } catch (error) {
       throw new ApiClientError(
         'Failed to bulk delete credentials',
