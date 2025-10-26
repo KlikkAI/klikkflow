@@ -32,8 +32,8 @@ export class AuthService {
    */
   async register(userData: IRegistrationData): Promise<AuthResult> {
     try {
-      // Check if user already exists
-      const existingUser = await User.findOne({ email: userData.email });
+      // Check if user already exists (use $eq to prevent NoSQL injection)
+      const existingUser = await User.findOne({ email: { $eq: userData.email } });
       if (existingUser) {
         throw new AppError('User with this email already exists', 409);
       }
@@ -103,8 +103,8 @@ export class AuthService {
    */
   async login(email: string, password: string): Promise<AuthResult> {
     try {
-      // Find user with password (password is not selected by default)
-      const user = await User.findOne({ email }).select('+password +refreshTokens');
+      // Find user with password (password is not selected by default, use $eq to prevent NoSQL injection)
+      const user = await User.findOne({ email: { $eq: email } }).select('+password +refreshTokens');
 
       if (!user) {
         throw new AppError('Invalid email or password', 401);
@@ -278,9 +278,9 @@ export class AuthService {
         }
       }
 
-      // If email is being updated, check if it's already taken
+      // If email is being updated, check if it's already taken (use $eq to prevent NoSQL injection)
       if (filteredUpdates.email) {
-        const existingUser = await User.findOne({ email: filteredUpdates.email });
+        const existingUser = await User.findOne({ email: { $eq: filteredUpdates.email } });
         if (existingUser && existingUser._id.toString() !== userId) {
           throw new AppError('Email already in use', 409);
         }
