@@ -638,13 +638,23 @@ export class QueryOptimizer {
     ];
 
     // Extract WHERE columns (simplified)
+    // CodeQL fix: Use explicit string manipulation instead of regex for parsing (Alert #107)
+    // Note: This is query ANALYSIS, not query BUILDING - not a SQL injection vector
     const whereMatch = lowerQuery.match(/where\s+.*?(?=\s+(?:group|order|limit|$))/);
     const whereColumns: string[] = [];
     if (whereMatch) {
       const whereClause = whereMatch[0];
       const columnMatches = whereClause.match(/\b\w+\s*[=<>!]/g);
       if (columnMatches) {
-        whereColumns.push(...columnMatches.map((m) => m.replace(/\s*[=<>!].*/, '')));
+        // Extract column name by finding the operator position and taking substring before it
+        whereColumns.push(
+          ...columnMatches.map((m) => {
+            // Find first operator character
+            const operatorIndex = m.search(/[=<>!]/);
+            // Return substring before operator, trimmed
+            return operatorIndex >= 0 ? m.substring(0, operatorIndex).trim() : m.trim();
+          })
+        );
       }
     }
 

@@ -35,8 +35,9 @@ export class ExpressionEvaluator {
   // biome-ignore lint/suspicious/noExplicitAny: Pre-existing utility returns dynamic template results
   private evaluateTemplate(expression: string): any {
     // Replace {{variable}} with context values
-    // CodeQL fix: Use negated character class to prevent ReDoS (Alert #119)
-    return expression.replace(/\{\{([^}]+)\}\}/g, (match, variable) => {
+    // CodeQL fix: Use bounded quantifier to prevent ReDoS (Alert #135, #119)
+    // Limit variable names to reasonable length (200 chars) to prevent catastrophic backtracking
+    return expression.replace(/\{\{([^}]{1,200})\}\}/g, (match, variable) => {
       const trimmed = variable.trim();
       return this.getContextValue(trimmed) || match;
     });

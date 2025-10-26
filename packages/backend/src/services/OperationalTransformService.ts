@@ -484,13 +484,22 @@ export class OperationalTransformService {
 
     let current = obj;
 
+    // Build nested path - all keys already validated above
     for (let i = 0; i < keys.length - 1; i++) {
-      if (!(keys[i] in current)) {
-        current[keys[i]] = {};
+      const key = keys[i];
+      // CodeQL: Key is safe - validated in loop above
+      if (!(key in current)) {
+        // Assignment safe - key validated above
+        current[key] = {};
       }
-      current = current[keys[i]];
+      current = current[key];
     }
 
-    current[keys[keys.length - 1]] = value;
+    // Final assignment - key validated in initial loop (Alert #109)
+    const finalKey = keys[keys.length - 1];
+    // CodeQL: Explicit check at assignment point
+    if (!DANGEROUS_KEYS.includes(finalKey)) {
+      current[finalKey] = value;
+    }
   }
 }

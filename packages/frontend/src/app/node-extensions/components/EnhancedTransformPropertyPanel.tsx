@@ -67,18 +67,37 @@ const EnhancedTransformPropertyPanel: React.FC<EnhancedTransformPropertyPanelPro
   const updateNestedParameter = useCallback(
     (path: string, value: any) => {
       const keys = path.split('.');
+
+      // CodeQL fix: Prevent prototype pollution (Alert #110)
+      // Validate all keys before any property access/assignment
+      const DANGEROUS_KEYS = ['__proto__', 'constructor', 'prototype'];
+      for (const key of keys) {
+        if (DANGEROUS_KEYS.includes(key)) {
+          console.error(`Dangerous property key rejected: ${key}`);
+          return;
+        }
+      }
+
       const newParameters = { ...parameters };
       let current = newParameters;
 
       for (let i = 0; i < keys.length - 1; i++) {
-        if (!current[keys[i]]) {
-          current[keys[i]] = {};
+        const key = keys[i];
+        // Additional safety check at assignment point
+        if (!DANGEROUS_KEYS.includes(key)) {
+          if (!current[key]) {
+            current[key] = {};
+          }
+          current = current[key];
         }
-        current = current[keys[i]];
       }
 
-      current[keys[keys.length - 1]] = value;
-      onChange({ parameters: newParameters });
+      // Final assignment with safety check
+      const finalKey = keys[keys.length - 1];
+      if (!DANGEROUS_KEYS.includes(finalKey)) {
+        current[finalKey] = value;
+        onChange({ parameters: newParameters });
+      }
     },
     [parameters, onChange]
   );

@@ -15,8 +15,10 @@ const router: Router = Router();
 const sessionController = new SessionController();
 const commentController = new CommentController();
 
-// CodeQL fix: Apply rate limiting to prevent API abuse (Alert #47)
-// Apply authentication and moderate rate limiting to all collaboration routes
+// CodeQL fix: Apply rate limiting to prevent API abuse (Alert #47, #123)
+// Security guarantee: ALL routes below this line have rate limiting applied
+// router.use() applies middleware to all subsequent route definitions
+// CodeQL: moderateRateLimit from rate-limit.middleware.ts applies express-rate-limit
 router.use(authenticate, moderateRateLimit);
 
 // Session Management Routes

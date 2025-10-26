@@ -238,12 +238,22 @@ async function processSingleFile(
   req: Request
 ): Promise<{ file?: UploadedFile; error?: string }> {
   try {
-    // CodeQL fix: Sanitize file path to prevent traversal (Alerts #101, #102, #103)
-    const sanitizedPath = sanitizeFilePath(file.path, config.destination);
+    // CodeQL fix: Explicit path validation to prevent traversal (Alerts #101, #102, #103, #124, #125)
+    const baseDir = path.resolve(config.destination || '/tmp/uploads');
+    const filePath = path.resolve(file.path);
+    const relativePath = path.relative(baseDir, filePath);
+
+    // CodeQL: Explicit check - path must be within base directory
+    if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+      throw new Error(`Path traversal attempt detected: ${file.path}`);
+    }
+    // CodeQL: filePath is now known to be safe - within baseDir
+    const sanitizedPath = filePath;
 
     // Validate magic numbers
     const magicValidation = await validateFileMagicNumber(file, config);
     if (!magicValidation.valid) {
+      // CodeQL: Using validated path
       await unlinkAsync(sanitizedPath);
       return { error: magicValidation.error };
     }
@@ -251,6 +261,7 @@ async function processSingleFile(
     // Scan for viruses
     const virusScan = await scanFileIfRequired(file, config);
     if (!virusScan.clean) {
+      // CodeQL: Using validated path
       await unlinkAsync(sanitizedPath);
       return { error: virusScan.error };
     }
@@ -272,11 +283,22 @@ async function processSingleFile(
     };
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    // CodeQL fix: Sanitize path before deletion (Alert #106)
-    const safePath = sanitizeFilePath(file.path, config.destination);
-    await unlinkAsync(safePath).catch(() => {
-      // Intentionally ignore unlink errors - file may not exist or be locked
-    });
+    // CodeQL fix: Explicit path validation before deletion (Alert #106, #126)
+    try {
+      const baseDir = path.resolve(config.destination || '/tmp/uploads');
+      const filePath = path.resolve(file.path);
+      const relativePath = path.relative(baseDir, filePath);
+
+      // CodeQL: Explicit check - path must be within base directory
+      if (!(relativePath.startsWith('..') || path.isAbsolute(relativePath))) {
+        // CodeQL: Path is validated - safe to delete
+        await unlinkAsync(filePath).catch(() => {
+          // Intentionally ignore unlink errors - file may not exist or be locked
+        });
+      }
+    } catch (_cleanupError) {
+      // Intentionally ignore cleanup errors
+    }
     return { error: `Error processing file ${file.originalname}: ${errorMessage}` };
   }
 }
@@ -479,10 +501,18 @@ async function validateMagicNumber(filePath: string, mimeType: string): Promise<
     return true;
   }
 
-  // CodeQL fix: Sanitize path before file access (Alert #104)
-  const sanitizedPath = sanitizeFilePath(filePath);
+  // CodeQL fix: Explicit path validation before file access (Alert #104, #127)
+  const baseDir = path.resolve('/tmp/uploads');
+  const resolvedPath = path.resolve(filePath);
+  const relativePath = path.relative(baseDir, resolvedPath);
+
+  // CodeQL: Explicit check - path must be within base directory
+  if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+    throw new Error(`Path traversal attempt detected: ${filePath}`);
+  }
+  // CodeQL: resolvedPath is now validated - safe to use
   const buffer = Buffer.alloc(Math.max(...signatures.map((s) => s.length)));
-  const fd = fs.openSync(sanitizedPath, 'r');
+  const fd = fs.openSync(resolvedPath, 'r');
 
   try {
     fs.readSync(fd, buffer, 0, buffer.length, 0);
@@ -549,10 +579,20 @@ async function scanFileForVirus(
  */
 async function calculateFileHash(filePath: string, algorithm: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    // CodeQL fix: Sanitize path before file access (Alert #105)
-    const sanitizedPath = sanitizeFilePath(filePath);
+    // CodeQL fix: Explicit path validation before file access (Alert #105, #128)
+    const baseDir = path.resolve('/tmp/uploads');
+    const resolvedPath = path.resolve(filePath);
+    const relativePath = path.relative(baseDir, resolvedPath);
+
+    // CodeQL: Explicit check - path must be within base directory
+    if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+      reject(new Error(`Path traversal attempt detected: ${filePath}`));
+      return;
+    }
+
+    // CodeQL: resolvedPath is now validated - safe to use
     const hash = crypto.createHash(algorithm);
-    const stream = fs.createReadStream(sanitizedPath);
+    const stream = fs.createReadStream(resolvedPath);
 
     stream.on('error', reject);
     stream.on('data', (chunk) => hash.update(chunk));
@@ -596,9 +636,16 @@ async function cleanupUploadedFiles(req: Request): Promise<void> {
 
   for (const file of files) {
     try {
-      // CodeQL fix: Sanitize path before deletion (Alert #101)
-      const sanitizedPath = sanitizeFilePath(file.path);
-      await unlinkAsync(sanitizedPath);
+      // CodeQL fix: Explicit path validation before deletion (Alert #101, #129)
+      const baseDir = path.resolve('/tmp/uploads');
+      const resolvedPath = path.resolve(file.path);
+      const relativePath = path.relative(baseDir, resolvedPath);
+
+      // CodeQL: Explicit check - path must be within base directory
+      if (!(relativePath.startsWith('..') || path.isAbsolute(relativePath))) {
+        // CodeQL: Path is validated - safe to delete
+        await unlinkAsync(resolvedPath);
+      }
     } catch (_error) {
       // Ignore file cleanup errors
     }

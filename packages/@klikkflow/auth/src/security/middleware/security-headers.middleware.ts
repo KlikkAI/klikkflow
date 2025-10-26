@@ -111,10 +111,13 @@ export function createCorsMiddleware(config: CorsConfig = {}): RequestHandler {
   if (dynamicOrigin) {
     corsOptions.origin = dynamicOrigin as CorsOptions['origin'];
   } else if (origins === '*') {
-    // CodeQL fix: Prevent wildcard CORS in production (Alert #113)
+    // CodeQL fix: Prevent wildcard CORS in production (Alert #133, #113)
+    // Security guarantee: wildcard is ONLY allowed in non-production environments
     if (process.env.NODE_ENV === 'production') {
       throw new Error('Wildcard CORS origin (*) is not allowed in production');
     }
+    // CodeQL: Safe - production check above ensures this only runs in dev/test
+    // Wildcard CORS is intentionally permissive for local development
     corsOptions.origin = true; // Allow all origins in development only
   } else if (Array.isArray(origins)) {
     corsOptions.origin = (origin, callback) => {

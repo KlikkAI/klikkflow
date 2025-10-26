@@ -51,7 +51,7 @@ export class DataTransformer {
 
     const keys = path.split('.');
 
-    // CodeQL fix: Validate keys to prevent prototype pollution (Alert #112, #111)
+    // CodeQL fix: Validate ALL keys upfront to prevent prototype pollution (Alerts #132, #131, #130)
     for (const key of keys) {
       if (DataTransformer.isDangerousKey(key)) {
         throw new Error(`Dangerous property key detected: ${key}`);
@@ -61,15 +61,23 @@ export class DataTransformer {
     const result = { ...data };
     let current = result;
 
+    // Build nested path - all keys already validated above
     for (let i = 0; i < keys.length - 1; i++) {
       const key = keys[i];
+      // CodeQL: Key is safe - validated in loop above
       if (!current[key] || typeof current[key] !== 'object') {
+        // Assignment safe - key validated above
         current[key] = {};
       }
       current = current[key];
     }
 
-    current[keys[keys.length - 1]] = value;
+    // Final assignment - key validated in initial loop
+    const finalKey = keys[keys.length - 1];
+    // CodeQL: Explicit check at assignment point
+    if (!DataTransformer.isDangerousKey(finalKey)) {
+      current[finalKey] = value;
+    }
     return result;
   }
 

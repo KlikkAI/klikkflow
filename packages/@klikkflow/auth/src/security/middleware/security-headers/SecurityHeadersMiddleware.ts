@@ -227,17 +227,27 @@ export class SecurityHeadersMiddleware extends SecurityMiddleware {
     origin: string | undefined,
     res: Response
   ): void {
-    // CodeQL fix: Prevent credentials with wildcard origin (Alert #114)
+    // CodeQL fix: Prevent credentials with wildcard origin (Alert #134, #114)
+    // Security guarantee: wildcard + credentials is ALWAYS rejected
     const hasWildcard = cors?.origins?.includes('*');
     if (hasWildcard && cors?.credentials) {
       throw new Error('CORS misconfiguration: Cannot enable credentials with wildcard origin');
     }
 
-    if (hasWildcard || (origin && cors?.origins?.includes(origin))) {
+    // Handle wildcard case (credentials must be false due to check above)
+    if (hasWildcard) {
+      // CodeQL: Safe - credentials already verified false above
       res.setHeader('Access-Control-Allow-Origin', origin || '*');
+      return; // Early return - no credentials possible
     }
-    if (cors?.credentials && !hasWildcard) {
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+    // Handle specific origin case (can include credentials)
+    if (origin && cors?.origins?.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      if (cors?.credentials) {
+        // CodeQL: Safe - not a wildcard origin
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+      }
     }
   }
 }
