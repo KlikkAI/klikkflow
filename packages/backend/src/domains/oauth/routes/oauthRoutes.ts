@@ -2,6 +2,11 @@ import express, { type Router } from 'express';
 import { body } from 'express-validator';
 import { authenticate } from '../../../middleware/auth';
 import { catchAsync } from '../../../middleware/errorHandlers';
+import {
+  moderateRateLimit,
+  relaxedRateLimit,
+  strictRateLimit,
+} from '../../../middleware/rate-limit.middleware';
 import { OAuthController } from '../controllers/OAuthController';
 
 const router: Router = express.Router();
@@ -14,6 +19,7 @@ const oauthController = new OAuthController();
  */
 router.post(
   '/gmail/initiate',
+  strictRateLimit,
   authenticate,
   [body('credentialName').notEmpty().withMessage('Credential name is required')],
   catchAsync(oauthController.initiateGmailOAuth)
@@ -26,6 +32,7 @@ router.post(
  */
 router.post(
   '/gmail/exchange-code',
+  strictRateLimit,
   [
     body('code').notEmpty().withMessage('Authorization code is required'),
     body('clientId').notEmpty().withMessage('Client ID is required'),
@@ -41,7 +48,7 @@ router.post(
  * @desc    OAuth2 callback endpoint (handles Google redirect)
  * @access  Public
  */
-router.get('/gmail/callback', catchAsync(oauthController.handleGmailCallback));
+router.get('/gmail/callback', relaxedRateLimit, catchAsync(oauthController.handleGmailCallback));
 
 /**
  * @route   POST /oauth/gmail/refresh-token
@@ -50,6 +57,7 @@ router.get('/gmail/callback', catchAsync(oauthController.handleGmailCallback));
  */
 router.post(
   '/gmail/refresh-token',
+  moderateRateLimit,
   [
     body('refreshToken').notEmpty().withMessage('Refresh token is required'),
     body('clientId').notEmpty().withMessage('Client ID is required'),
@@ -65,6 +73,7 @@ router.post(
  */
 router.post(
   '/gmail/test-connection',
+  moderateRateLimit,
   [
     body('clientId').notEmpty().withMessage('Client ID is required'),
     body('clientSecret').notEmpty().withMessage('Client Secret is required'),

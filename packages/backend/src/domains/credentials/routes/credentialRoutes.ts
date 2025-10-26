@@ -2,6 +2,7 @@ import express, { type Router } from 'express';
 import { body, param } from 'express-validator';
 import { authenticate } from '../../../middleware/auth';
 import { catchAsync } from '../../../middleware/errorHandlers';
+import { moderateRateLimit, relaxedRateLimit } from '../../../middleware/rate-limit.middleware';
 import { CredentialController } from '../controllers/CredentialController';
 
 const router: Router = express.Router();
@@ -12,14 +13,19 @@ const credentialController = new CredentialController();
  * @desc    Get all credentials for user
  * @access  Private
  */
-router.get('/', authenticate, catchAsync(credentialController.getCredentials));
+router.get('/', relaxedRateLimit, authenticate, catchAsync(credentialController.getCredentials));
 
 /**
  * @route   GET /credentials/debug
  * @desc    Get all credentials (debug route)
  * @access  Private (Admin only - TODO: add admin middleware)
  */
-router.get('/debug', authenticate, catchAsync(credentialController.getAllCredentialsDebug));
+router.get(
+  '/debug',
+  relaxedRateLimit,
+  authenticate,
+  catchAsync(credentialController.getAllCredentialsDebug)
+);
 
 /**
  * @route   POST /credentials
@@ -28,6 +34,7 @@ router.get('/debug', authenticate, catchAsync(credentialController.getAllCredent
  */
 router.post(
   '/',
+  moderateRateLimit,
   authenticate,
   [
     body('name').trim().isLength({ min: 1, max: 100 }),
@@ -48,6 +55,7 @@ router.post(
  */
 router.put(
   '/:id',
+  moderateRateLimit,
   authenticate,
   [
     param('id').isMongoId(),
@@ -66,6 +74,7 @@ router.put(
  */
 router.delete(
   '/:id',
+  moderateRateLimit,
   authenticate,
   [param('id').isMongoId()],
   catchAsync(credentialController.deleteCredential)
@@ -78,6 +87,7 @@ router.delete(
  */
 router.post(
   '/:id/test',
+  moderateRateLimit,
   authenticate,
   [param('id').isMongoId()],
   catchAsync(credentialController.testCredential)
@@ -90,6 +100,7 @@ router.post(
  */
 router.post(
   '/:id/test-gmail',
+  moderateRateLimit,
   authenticate,
   [param('id').isMongoId(), body('filters').optional().isObject()],
   catchAsync(credentialController.testGmail)

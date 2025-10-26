@@ -15,6 +15,7 @@ import {
 import { Router } from 'express';
 import { z } from 'zod';
 import { authenticate } from '../middleware/auth';
+import { moderateRateLimit, relaxedRateLimit } from '../middleware/rate-limit.middleware';
 import { asyncHandler } from '../utils/asyncHandler';
 import { sanitizeObject } from '../utils/safe-object-merge';
 
@@ -32,6 +33,7 @@ const pluginDistribution = new PluginDistribution();
  */
 router.get(
   '/plugins',
+  relaxedRateLimit,
   asyncHandler(async (req, res) => {
     const searchQuery = PluginSearchSchema.parse(req.query);
 
@@ -50,6 +52,7 @@ router.get(
  */
 router.get(
   '/plugins/:pluginId',
+  relaxedRateLimit,
   asyncHandler(async (req, res) => {
     const { pluginId } = req.params;
 
@@ -81,6 +84,7 @@ router.get(
  */
 router.post(
   '/plugins',
+  moderateRateLimit,
   authenticate,
   asyncHandler(async (req, res) => {
     if (!req.user) {
@@ -139,6 +143,7 @@ router.post(
  */
 router.put(
   '/plugins/:pluginId',
+  moderateRateLimit,
   authenticate,
   asyncHandler(async (req, res) => {
     const { pluginId } = req.params;
@@ -168,6 +173,7 @@ router.put(
  */
 router.delete(
   '/plugins/:pluginId/versions/:version',
+  moderateRateLimit,
   authenticate,
   asyncHandler(async (req, res) => {
     if (!req.user) {
@@ -210,6 +216,7 @@ router.delete(
  */
 router.post(
   '/plugins/:pluginId/download',
+  moderateRateLimit,
   authenticate,
   asyncHandler(async (req, res) => {
     if (!req.user) {
@@ -254,6 +261,7 @@ router.post(
  */
 router.get(
   '/plugins/:pluginId/versions/:version/download',
+  relaxedRateLimit,
   asyncHandler(async (req, res) => {
     const { pluginId, version } = req.params;
     const { token } = req.query;
@@ -297,6 +305,7 @@ router.get(
  */
 router.post(
   '/plugins/:pluginId/validate',
+  moderateRateLimit,
   authenticate,
   asyncHandler(async (req, res) => {
     const pluginPackage = req.body;
@@ -316,6 +325,7 @@ router.post(
  */
 router.get(
   '/stats',
+  relaxedRateLimit,
   asyncHandler(async (_req, res) => {
     const [registryStats, downloadStats] = await Promise.all([
       pluginRegistry.getMarketplaceStats(),
@@ -338,6 +348,7 @@ router.get(
  */
 router.get(
   '/categories',
+  relaxedRateLimit,
   asyncHandler(async (_req, res) => {
     const categories = [
       { id: 'integration', name: 'Integrations', description: 'Connect with external services' },
@@ -360,6 +371,7 @@ router.get(
  */
 router.get(
   '/featured',
+  relaxedRateLimit,
   asyncHandler(async (_req, res) => {
     const searchQuery = {
       featured: true,
@@ -384,6 +396,7 @@ router.get(
  */
 router.post(
   '/plugins/:pluginId/review',
+  moderateRateLimit,
   authenticate,
   asyncHandler(async (req, res) => {
     if (!req.user) {
