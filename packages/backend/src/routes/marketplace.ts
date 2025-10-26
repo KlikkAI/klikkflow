@@ -16,6 +16,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { authenticate } from '../middleware/auth';
 import { asyncHandler } from '../utils/asyncHandler';
+import { sanitizeObject } from '../utils/safe-object-merge';
 
 const router = Router();
 const logger = new Logger('MarketplaceAPI');
@@ -89,8 +90,10 @@ router.post(
       });
     }
 
+    // Sanitize request body to prevent prototype pollution
+    const sanitizedBody = sanitizeObject(req.body);
     const publishRequest = PublishRequestSchema.parse({
-      ...req.body,
+      ...sanitizedBody,
       publisherInfo: {
         userId: req.user.id,
         organizationId: req.user.organizationId,

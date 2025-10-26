@@ -1,4 +1,5 @@
 import mongoose, { type Document, Schema } from 'mongoose';
+import { safeObjectMerge } from '../utils/safe-object-merge';
 
 export interface INodeExecution {
   nodeId: string;
@@ -157,7 +158,8 @@ executionSchema.methods.updateNodeExecution = function (
 ) {
   const nodeExecution = this.nodeExecutions.find((ne: INodeExecution) => ne.nodeId === nodeId);
   if (nodeExecution) {
-    Object.assign(nodeExecution, update);
+    // Use safe merge to prevent prototype pollution
+    safeObjectMerge(nodeExecution, update);
 
     // Calculate duration if both start and end times are present
     if (nodeExecution.startTime && nodeExecution.endTime) {

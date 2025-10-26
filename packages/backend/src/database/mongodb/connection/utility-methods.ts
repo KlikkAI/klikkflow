@@ -1,4 +1,6 @@
 // MongoDB utilities reusing patterns from core utilities
+
+import { safeObjectMerge } from '../../../utils/safe-object-merge';
 import type { QueryOptions } from '../../types/query-types';
 
 export class MongoDBUtils {
@@ -13,7 +15,8 @@ export class MongoDBUtils {
     const mongoQuery: any = {};
 
     if (options.filter) {
-      Object.assign(mongoQuery, options.filter);
+      // Use safe merge to prevent prototype pollution
+      safeObjectMerge(mongoQuery, options.filter);
     }
 
     return mongoQuery;
