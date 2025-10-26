@@ -12,6 +12,10 @@ on:
       - 'packages/frontend/**'
       - 'packages/@klikkflow/design-system/**'
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   bundle-analysis:
     runs-on: ubuntu-latest

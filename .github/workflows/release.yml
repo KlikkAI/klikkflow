@@ -20,6 +20,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
+permissions:
+  contents: write
+  pull-requests: write
+  packages: write
+  id-token: write
+
 env:
   NODE_VERSION: '20'
   PNPM_VERSION: '10.18.1'

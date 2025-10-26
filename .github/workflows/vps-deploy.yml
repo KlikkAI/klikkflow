@@ -30,6 +30,11 @@ concurrency:
   group: vps-deployment
   cancel-in-progress: false
 
+permissions:
+  contents: read
+  packages: read
+  deployments: write
+
 env:
   DOCKER_REGISTRY: klikkai
   DEPLOYMENT_DIR: /opt/klikkflow
