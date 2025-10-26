@@ -12,8 +12,6 @@ type AuditReport = AuditExport;
 
 // Complete audit logger implementation (stub)
 class AuditLogger {
-  private config: { maxEvents: number; retentionDays: number; complianceMode: boolean };
-
   constructor(config: { maxEvents: number; retentionDays: number; complianceMode: boolean }) {
     this.config = config;
   }

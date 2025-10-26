@@ -93,9 +93,6 @@ export class AuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      console.error('=== FULL REGISTRATION ERROR ===');
-      console.error(error);
-      console.error('=== END ERROR ===');
       logger.error('Registration error:', error);
       throw new AppError('Registration failed', 500);
     }

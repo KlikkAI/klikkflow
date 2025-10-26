@@ -84,7 +84,6 @@ export class QueryOptimizer {
   private queryStats = new Map<string, QueryStats>();
   private queryPlans = new Map<string, QueryPlan>();
   private slowQueryThreshold: number;
-  private enableProfiling: boolean;
 
   constructor(
     options: {

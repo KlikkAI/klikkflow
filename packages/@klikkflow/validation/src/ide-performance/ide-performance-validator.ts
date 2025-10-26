@@ -4,7 +4,6 @@ import { SourceMappingValidator } from './source-mapping-validator';
 import type { IDEPerformanceReport } from './types';
 
 export class IDEPerformanceValidator {
-  private workspaceRoot: string;
   public navigationTester: NavigationTester;
   public intelliSenseTester: IntelliSenseTester;
   public sourceMappingValidator: SourceMappingValidator;
