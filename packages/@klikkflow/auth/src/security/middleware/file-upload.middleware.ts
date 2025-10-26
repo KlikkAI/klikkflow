@@ -717,10 +717,13 @@ function validateFilePath(
   filePath: string,
   basePath: string
 ): { valid: boolean; resolvedPath?: string; error?: { code: string; message: string } } {
-  const resolvedPath = path.resolve(filePath);
-  const resolvedBase = path.resolve(basePath);
+  // Normalize and resolve paths to prevent traversal attacks
+  const normalizedPath = path.normalize(filePath);
+  const resolvedPath = path.resolve(normalizedPath);
+  const resolvedBase = path.resolve(path.normalize(basePath));
 
-  if (!resolvedPath.startsWith(resolvedBase)) {
+  // Ensure the resolved path stays within the base directory
+  if (!resolvedPath.startsWith(resolvedBase + path.sep) && resolvedPath !== resolvedBase) {
     return {
       valid: false,
       error: {
@@ -821,7 +824,9 @@ export function createSecureDownloadMiddleware(
       }
 
       const filename = filenameValidation.filename as string;
-      const filePath = path.join(options.basePath, filename);
+      // Sanitize filename to prevent path traversal - use only the basename
+      const sanitizedFilename = path.basename(filename);
+      const filePath = path.join(options.basePath, sanitizedFilename);
 
       // Validate file path
       const pathValidation = validateFilePath(filePath, options.basePath);
