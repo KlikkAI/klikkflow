@@ -77,32 +77,13 @@ export class AuthMiddleware {
 
       next();
     } catch (error) {
-      // Add detailed logging for JWT errors
-      console.error('=== AUTHENTICATION ERROR ===');
-      console.error(
-        'Error type:',
-        error instanceof jwt.JsonWebTokenError
-          ? 'JsonWebTokenError'
-          : error instanceof jwt.TokenExpiredError
-            ? 'TokenExpiredError'
-            : 'Other'
-      );
-      console.error('Error message:', error instanceof Error ? error.message : error);
-      console.error('JWT_SECRET configured:', !!process.env.JWT_SECRET);
-
       if (error instanceof jwt.JsonWebTokenError) {
-        console.error(
-          'JWT verification failed - likely token signature mismatch or invalid token format'
-        );
         next(new AppError('Invalid authentication token', 401));
       } else if (error instanceof jwt.TokenExpiredError) {
-        console.error('Token expired at:', error.expiredAt);
         next(new AppError('Authentication token has expired', 401));
       } else {
-        console.error('Unexpected authentication error:', error);
         next(error);
       }
-      console.error('=== END AUTHENTICATION ERROR ===');
     }
   };
 
