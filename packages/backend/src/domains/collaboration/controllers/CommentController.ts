@@ -10,8 +10,6 @@ import { ApiResponse } from '../../../utils/response';
 import { CollaborationService } from '../services/CollaborationService';
 
 export class CommentController {
-  private collaborationService: CollaborationService;
-
   constructor() {
     this.collaborationService = CollaborationService.getInstance();
   }

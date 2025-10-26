@@ -58,7 +58,6 @@ export interface WorkspaceMetrics {
 
 export class IDEPerformanceAnalyzer {
   private workspaceRoot: string;
-  private tsConfigPath: string;
 
   constructor(workspaceRoot: string = process.cwd()) {
     this.workspaceRoot = workspaceRoot;

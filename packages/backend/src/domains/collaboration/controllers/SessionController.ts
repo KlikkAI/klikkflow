@@ -11,8 +11,6 @@ import { ApiResponse } from '../../../utils/response';
 import { CollaborationService } from '../services/CollaborationService';
 
 export class SessionController {
-  private collaborationService: CollaborationService;
-
   constructor() {
     this.collaborationService = CollaborationService.getInstance();
   }

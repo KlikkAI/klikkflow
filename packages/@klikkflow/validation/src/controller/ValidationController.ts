@@ -47,11 +47,6 @@ export class ValidationController extends EventEmitter {
   private dependencyAnalyzer!: DependencyAnalyzer;
   private codeOrganizationChecker!: CodeOrganizationChecker;
   private typeSafetyValidator!: TypeSafetyValidator;
-  private typeScriptAnalyzer!: TypeScriptAnalyzer;
-  private idePerformanceValidator!: IDEPerformanceValidator;
-  private importPathOptimizer!: ImportPathOptimizer;
-  private reportAggregator!: ValidationReportAggregator;
-  private recommendationEngine!: RecommendationEngine;
 
   constructor(workspaceRoot: string = process.cwd()) {
     super();
