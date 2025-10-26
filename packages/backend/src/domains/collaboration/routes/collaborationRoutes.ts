@@ -5,6 +5,7 @@
 
 import { Router } from 'express';
 import { authenticate } from '../../../middleware/auth';
+import { relaxedRateLimit } from '../../../middleware/rate-limit.middleware';
 import { CommentController } from '../controllers/CommentController';
 import { SessionController } from '../controllers/SessionController';
 
@@ -19,7 +20,7 @@ router.use(authenticate);
 
 // Session Management Routes
 // GET /collaboration/sessions/:workflowId - Get active session for workflow
-router.get('/sessions/:workflowId', sessionController.getSession);
+router.get('/sessions/:workflowId', relaxedRateLimit, sessionController.getSession);
 
 // TODO: Implement remaining session controller methods
 // POST /collaboration/sessions/:workflowId/join - Join or create session
@@ -42,7 +43,7 @@ router.get('/sessions/:workflowId', sessionController.getSession);
 
 // Comment System Routes
 // GET /collaboration/comments/:workflowId - Get workflow comments
-router.get('/comments/:workflowId', commentController.getWorkflowComments);
+router.get('/comments/:workflowId', relaxedRateLimit, commentController.getWorkflowComments);
 
 // TODO: Implement remaining comment controller methods
 // POST /collaboration/comments - Create new comment

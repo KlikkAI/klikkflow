@@ -8,6 +8,7 @@ import { Logger } from '@klikkflow/core';
 import { Router } from 'express';
 import { z } from 'zod';
 import { authenticate } from '../middleware/auth';
+import { moderateRateLimit, relaxedRateLimit } from '../middleware/rate-limit.middleware';
 import { asyncHandler } from '../utils/asyncHandler';
 
 const router = Router();
@@ -22,6 +23,7 @@ const logger = new Logger('WorkflowOptimizationAPI');
  */
 router.post(
   '/analyze',
+  moderateRateLimit,
   authenticate,
   asyncHandler(async (req, res) => {
     try {
@@ -121,6 +123,7 @@ router.post(
  */
 router.get(
   '/suggestions/:workflowId',
+  relaxedRateLimit,
   authenticate,
   asyncHandler(async (req, res) => {
     const { workflowId } = req.params;
@@ -147,6 +150,7 @@ router.get(
  */
 router.post(
   '/apply-suggestion',
+  moderateRateLimit,
   authenticate,
   asyncHandler(async (req, res) => {
     const { workflowId, suggestionId, autoApply } = req.body;
@@ -189,6 +193,7 @@ router.post(
  */
 router.get(
   '/metrics/:workflowId',
+  relaxedRateLimit,
   authenticate,
   asyncHandler(async (req, res) => {
     const { workflowId } = req.params;
@@ -241,6 +246,7 @@ router.get(
  */
 router.post(
   '/batch-analyze',
+  moderateRateLimit,
   authenticate,
   asyncHandler(async (req, res) => {
     const { workflowIds } = req.body;
@@ -285,6 +291,7 @@ router.post(
  */
 router.get(
   '/batch-status/:batchId',
+  relaxedRateLimit,
   authenticate,
   asyncHandler(async (req, res) => {
     const { batchId } = req.params;
