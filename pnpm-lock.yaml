@@ -211,8 +211,8 @@ catalogs:
       specifier: ^4.7.0
       version: 4.20.5
     vite:
-      specifier: ^7.0.4
-      version: 7.1.7
+      specifier: ^7.1.11
+      version: 7.1.12
     vitest:
       specifier: ^3.2.4
       version: 3.2.4
@@ -1121,7 +1121,7 @@ importers:
         version: 19.2.0(@types/react@19.2.2)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
-        version: 4.7.0(vite@7.1.7(@types/node@24.6.2)(jiti@2.6.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))
+        version: 4.7.0(vite@7.1.12(@types/node@24.6.2)(jiti@2.6.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))
       autoprefixer:
         specifier: 'catalog:'
         version: 10.4.21(postcss@8.5.6)
@@ -1133,7 +1133,7 @@ importers:
         version: 5.9.3
       vite:
         specifier: 'catalog:'
-        version: 7.1.7(@types/node@24.6.2)(jiti@2.6.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
+        version: 7.1.12(@types/node@24.6.2)(jiti@2.6.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
 
   packages/shared:
     dependencies:
@@ -9623,6 +9623,46 @@ packages:
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
 
+  vite@7.1.12:
+    resolution: {integrity: sha512-ZWyE8YXEXqJrrSLvYgrRP7p62OziLW7xI5HYGWFzOvupfAlrLvURSzv/FyGyy0eidogEM3ujU+kUG1zuHgb6Ug==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    hasBin: true
+    peerDependencies:
+      '@types/node': ^24.6.2
+      jiti: '>=1.21.0'
+      less: ^4.0.0
+      lightningcss: ^1.21.0
+      sass: ^1.70.0
+      sass-embedded: ^1.70.0
+      stylus: '>=0.54.8'
+      sugarss: ^5.0.0
+      terser: ^5.16.0
+      tsx: ^4.8.1
+      yaml: ^2.4.2
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      jiti:
+        optional: true
+      less:
+        optional: true
+      lightningcss:
+        optional: true
+      sass:
+        optional: true
+      sass-embedded:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      terser:
+        optional: true
+      tsx:
+        optional: true
+      yaml:
+        optional: true
+
   vite@7.1.7:
     resolution: {integrity: sha512-VbA8ScMvAISJNJVbRDTJdCwqQoAareR/wutevKanhR2/1EkoXVZVkkORaYm/tNVCjP/UDTKtcw3bAkwOUdedmA==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -13994,7 +14034,7 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
 
-  '@vitejs/plugin-react@4.7.0(vite@7.1.7(@types/node@24.6.2)(jiti@2.6.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))':
+  '@vitejs/plugin-react@4.7.0(vite@7.1.12(@types/node@24.6.2)(jiti@2.6.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))':
     dependencies:
       '@babel/core': 7.28.4
       '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.28.4)
@@ -14002,7 +14042,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.0-beta.27
       '@types/babel__core': 7.20.5
       react-refresh: 0.17.0
-      vite: 7.1.7(@types/node@24.6.2)(jiti@2.6.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
+      vite: 7.1.12(@types/node@24.6.2)(jiti@2.6.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -20821,6 +20861,22 @@ snapshots:
       - terser
       - tsx
       - yaml
+
+  vite@7.1.12(@types/node@24.6.2)(jiti@2.6.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1):
+    dependencies:
+      esbuild: 0.25.10
+      fdir: 6.5.0(picomatch@4.0.3)
+      picomatch: 4.0.3
+      postcss: 8.5.6
+      rollup: 4.52.2
+      tinyglobby: 0.2.15
+    optionalDependencies:
+      '@types/node': 24.6.2
+      fsevents: 2.3.3
+      jiti: 2.6.0
+      terser: 5.44.0
+      tsx: 4.20.5
+      yaml: 2.8.1
 
   vite@7.1.7(@types/node@24.6.2)(jiti@2.6.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1):
     dependencies:
