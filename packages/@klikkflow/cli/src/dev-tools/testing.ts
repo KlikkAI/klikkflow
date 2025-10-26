@@ -92,8 +92,11 @@ export class WorkflowTester {
     // Simulate async operation
     await new Promise((resolve) => setTimeout(resolve, 10));
 
+    // Type-safe handling of unknown input
+    const inputData = typeof input === 'object' && input !== null ? input : {};
+
     return {
-      ...input,
+      ...(inputData as Record<string, unknown>),
       workflowId,
       executedAt: new Date().toISOString(),
       status: 'completed',
@@ -139,7 +142,10 @@ export class WorkflowTester {
 }
 
 export class NodeTester {
-  async testNode(nodeClass: unknown, testCases: TestCase[]): Promise<TestResult[]> {
+  async testNode(
+    nodeClass: new (config: { id: string }) => { execute: (context: unknown) => Promise<unknown> },
+    testCases: TestCase[]
+  ): Promise<TestResult[]> {
     const results: TestResult[] = [];
 
     for (const testCase of testCases) {
@@ -150,7 +156,10 @@ export class NodeTester {
     return results;
   }
 
-  private async runNodeTest(nodeClass: unknown, testCase: TestCase): Promise<TestResult> {
+  private async runNodeTest(
+    nodeClass: new (config: { id: string }) => { execute: (context: unknown) => Promise<unknown> },
+    testCase: TestCase
+  ): Promise<TestResult> {
     const startTime = Date.now();
 
     try {
