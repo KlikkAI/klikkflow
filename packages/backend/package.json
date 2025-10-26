@@ -28,6 +28,7 @@
     "dotenv": "catalog:",
     "express": "catalog:",
     "express-async-errors": "catalog:",
+    "express-rate-limit": "^7.1.0",
     "express-validator": "catalog:",
     "google-auth-library": "catalog:",
     "googleapis": "catalog:",

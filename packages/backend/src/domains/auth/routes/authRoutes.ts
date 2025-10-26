@@ -1,6 +1,11 @@
 import express, { type Router } from 'express';
 import { authenticate } from '../../../middleware/auth';
 import { enhancedCatchAsync } from '../../../middleware/enhancedErrorHandlers';
+import {
+  moderateRateLimit,
+  relaxedRateLimit,
+  strictRateLimit,
+} from '../../../middleware/rate-limit.middleware';
 import { AuthController } from '../controllers/AuthController';
 import {
   changePasswordValidation,
@@ -18,42 +23,57 @@ const authController = new AuthController();
  * @desc    Register a new user
  * @access  Public
  */
-router.post('/register', registerValidation, enhancedCatchAsync(authController.register));
+router.post(
+  '/register',
+  strictRateLimit,
+  registerValidation,
+  enhancedCatchAsync(authController.register)
+);
 
 /**
  * @route   POST /auth/login
  * @desc    Login user
  * @access  Public
  */
-router.post('/login', loginValidation, enhancedCatchAsync(authController.login));
+router.post('/login', strictRateLimit, loginValidation, enhancedCatchAsync(authController.login));
 
 /**
  * @route   POST /auth/refresh
  * @desc    Refresh access token
  * @access  Public
  */
-router.post('/refresh', refreshTokenValidation, enhancedCatchAsync(authController.refreshToken));
+router.post(
+  '/refresh',
+  moderateRateLimit,
+  refreshTokenValidation,
+  enhancedCatchAsync(authController.refreshToken)
+);
 
 /**
  * @route   POST /auth/logout
  * @desc    Logout user (optional - mainly for client-side token removal)
  * @access  Private
  */
-router.post('/logout', enhancedCatchAsync(authController.logout));
+router.post('/logout', moderateRateLimit, enhancedCatchAsync(authController.logout));
 
 /**
  * @route   GET /auth/me
  * @desc    Get current user profile
  * @access  Private
  */
-router.get('/me', authenticate, enhancedCatchAsync(authController.getProfile));
+router.get('/me', relaxedRateLimit, authenticate, enhancedCatchAsync(authController.getProfile));
 
 /**
  * @route   GET /auth/profile
  * @desc    Get current user profile (alternative endpoint)
  * @access  Private
  */
-router.get('/profile', authenticate, enhancedCatchAsync(authController.getProfile));
+router.get(
+  '/profile',
+  relaxedRateLimit,
+  authenticate,
+  enhancedCatchAsync(authController.getProfile)
+);
 
 /**
  * @route   PUT /auth/profile
@@ -62,6 +82,7 @@ router.get('/profile', authenticate, enhancedCatchAsync(authController.getProfil
  */
 router.put(
   '/profile',
+  moderateRateLimit,
   authenticate,
   updateProfileValidation,
   enhancedCatchAsync(authController.updateProfile)
@@ -74,6 +95,7 @@ router.put(
  */
 router.put(
   '/change-password',
+  strictRateLimit,
   authenticate,
   changePasswordValidation,
   enhancedCatchAsync(authController.changePassword)

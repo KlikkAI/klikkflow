@@ -2,6 +2,7 @@ import express, { type Router } from 'express';
 import { body, param, query } from 'express-validator';
 import { authenticate } from '../../../middleware/auth';
 import { catchAsync } from '../../../middleware/errorHandlers';
+import { moderateRateLimit, relaxedRateLimit } from '../../../middleware/rate-limit.middleware';
 import { WorkflowController } from '../controllers/WorkflowController';
 
 const router: Router = express.Router();
@@ -14,6 +15,7 @@ const workflowController = new WorkflowController();
  */
 router.get(
   '/',
+  relaxedRateLimit,
   authenticate,
   [
     query('page').optional().isInt({ min: 1 }).toInt(),
@@ -32,6 +34,7 @@ router.get(
  */
 router.get(
   '/:id',
+  relaxedRateLimit,
   authenticate,
   [param('id').isMongoId()],
   catchAsync(workflowController.getWorkflowById)
@@ -44,6 +47,7 @@ router.get(
  */
 router.post(
   '/',
+  moderateRateLimit,
   authenticate,
   [
     body('name').trim().isLength({ min: 1, max: 100 }),
@@ -64,6 +68,7 @@ router.post(
  */
 router.put(
   '/:id',
+  moderateRateLimit,
   authenticate,
   [
     param('id').isMongoId(),
@@ -86,6 +91,7 @@ router.put(
  */
 router.delete(
   '/:id',
+  moderateRateLimit,
   authenticate,
   [param('id').isMongoId()],
   catchAsync(workflowController.deleteWorkflow)
@@ -98,6 +104,7 @@ router.delete(
  */
 router.post(
   '/:id/duplicate',
+  moderateRateLimit,
   authenticate,
   [param('id').isMongoId()],
   catchAsync(workflowController.duplicateWorkflow)
@@ -110,6 +117,7 @@ router.post(
  */
 router.post(
   '/:id/execute',
+  moderateRateLimit,
   authenticate,
   [param('id').isMongoId(), body('triggerData').optional().isObject()],
   catchAsync(workflowController.executeWorkflow)
@@ -122,6 +130,7 @@ router.post(
  */
 router.post(
   '/:id/test',
+  moderateRateLimit,
   authenticate,
   [param('id').isMongoId()],
   catchAsync(workflowController.testWorkflow)
@@ -134,6 +143,7 @@ router.post(
  */
 router.get(
   '/:id/statistics',
+  relaxedRateLimit,
   authenticate,
   [param('id').isMongoId(), query('days').optional().isInt({ min: 1, max: 365 }).toInt()],
   catchAsync(workflowController.getWorkflowStatistics)
@@ -146,6 +156,7 @@ router.get(
  */
 router.get(
   '/executions',
+  relaxedRateLimit,
   authenticate,
   [
     query('workflowId').optional().isMongoId(),
@@ -163,6 +174,7 @@ router.get(
  */
 router.get(
   '/executions/stats',
+  relaxedRateLimit,
   authenticate,
   [query('workflowId').optional().isMongoId()],
   catchAsync(workflowController.getExecutionStatistics)
@@ -175,6 +187,7 @@ router.get(
  */
 router.get(
   '/executions/:id',
+  relaxedRateLimit,
   authenticate,
   [param('id').isMongoId()],
   catchAsync(workflowController.getExecutionById)
@@ -187,6 +200,7 @@ router.get(
  */
 router.post(
   '/executions/:id/stop',
+  moderateRateLimit,
   authenticate,
   [param('id').isMongoId()],
   catchAsync(workflowController.stopExecution)
@@ -199,6 +213,7 @@ router.post(
  */
 router.post(
   '/test',
+  moderateRateLimit,
   authenticate,
   [body('workflow').isObject()],
   catchAsync(workflowController.testWorkflowFromBody)
