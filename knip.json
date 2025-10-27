@@ -30,7 +30,21 @@
     "**/dist/**",
     "**/build/**"
   ],
-  "ignoreDependencies": ["@types/*", "typescript", "tsx", "vitest", "@vitest/*", "@biomejs/biome"],
+  "ignoreDependencies": [
+    "@types/*",
+    "typescript",
+    "tsx",
+    "vitest",
+    "@vitest/*",
+    "@biomejs/biome",
+    "@playwright/test",
+    "@types/jest",
+    "@types/supertest",
+    "jest",
+    "jest-expect-message",
+    "supertest",
+    "ts-jest"
+  ],
   "ignoreExportsUsedInFile": true,
   "includeEntryExports": true
 }
