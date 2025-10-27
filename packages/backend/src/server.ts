@@ -4,12 +4,14 @@ import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import 'express-async-errors';
+import { createServer } from 'node:http';
 import dotenv from 'dotenv';
 
 // Load environment variables
 dotenv.config();
 
 import { DatabaseConfig } from './config/database.js';
+import { initializeSocketIO } from './config/socket.js';
 // Import routes
 import authRoutes from './domains/auth/routes/authRoutes.js';
 import apiRoutes from './routes/index.js';
@@ -104,7 +106,14 @@ app.use('*', (_req, res) => {
   res.status(404).json({ error: 'Not Found' });
 });
 
+// Create HTTP server for Socket.IO integration
+const httpServer = createServer(app);
+
+// Initialize Socket.IO with authentication
+const io = initializeSocketIO(httpServer);
+
 // Start server
-app.listen(PORT, () => {});
+httpServer.listen(PORT, () => {});
 
 export default app;
+export { io };
