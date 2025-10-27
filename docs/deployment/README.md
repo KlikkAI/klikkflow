@@ -15,11 +15,12 @@ Complete deployment guide for KlikkFlow workflow automation platform across all 
 3. [Docker Compose Deployment](#docker-compose-deployment)
 4. [Kubernetes Deployment](#kubernetes-deployment)
 5. [Cloud Provider Deployments](#cloud-provider-deployments)
-6. [Production Best Practices](#production-best-practices)
-7. [Monitoring and Observability](#monitoring-and-observability)
-8. [Backup and Recovery](#backup-and-recovery)
-9. [Troubleshooting](#troubleshooting)
-10. [Upgrade Guide](#upgrade-guide)
+6. [Domain and Routing Configuration](#domain-and-routing-configuration)
+7. [Production Best Practices](#production-best-practices)
+8. [Monitoring and Observability](#monitoring-and-observability)
+9. [Backup and Recovery](#backup-and-recovery)
+10. [Troubleshooting](#troubleshooting)
+11. [Upgrade Guide](#upgrade-guide)
 
 ---
 
@@ -549,6 +550,190 @@ helm install klikkflow ./infrastructure/kubernetes/helm/klikkflow \
   --create-namespace \
   --values infrastructure/kubernetes/helm/values-azure.yaml
 ```
+
+---
+
+## Domain and Routing Configuration
+
+### Overview
+
+When deploying Reporunner with the full stack (22 containers), you need proper routing configuration to access all services through a single domain. This section covers domain management, reverse proxy setup, and load balancer configuration across all cloud providers.
+
+### Quick Links
+
+**Essential Guides**:
+- **[Nginx Reverse Proxy Guide](./nginx-reverse-proxy.md)** - Configure nginx to route to all 22 containers
+- **[Domain Management Guide](./domain-management.md)** - DNS setup for AWS, GCP, Azure, and Cloudflare
+
+**Load Balancer Configurations**:
+- **[AWS Application Load Balancer](./load-balancers/aws-alb.md)** - ALB setup with path-based routing
+- **[GCP Cloud Load Balancing](./load-balancers/gcp-lb.md)** - Global load balancer configuration
+- **[Azure Application Gateway](./load-balancers/azure-appgw.md)** - Application Gateway with WAF
+
+### Routing Strategies
+
+#### Option 1: Path-Based Routing (Single Domain)
+
+**Best for**: Simple deployments, cost-effective
+
+```
+https://app.example.com/              → Frontend
+https://app.example.com/api/          → Backend API
+https://app.example.com/socket.io/    → WebSocket
+https://app.example.com/grafana/      → Grafana Dashboard
+https://app.example.com/prometheus/   → Prometheus Metrics
+https://app.example.com/kibana/       → Kibana Logs
+```
+
+**Pros**: Single SSL certificate, simple CORS, lower cost
+**Setup**: Follow the [Nginx Reverse Proxy Guide](./nginx-reverse-proxy.md)
+
+#### Option 2: Subdomain-Based Routing
+
+**Best for**: Enterprise deployments, better isolation
+
+```
+https://app.example.com        → Frontend
+https://api.example.com        → Backend API
+https://grafana.example.com    → Grafana Dashboard
+https://prometheus.example.com → Prometheus Metrics
+https://kibana.example.com     → Kibana Logs
+```
+
+**Pros**: Professional URLs, service isolation, flexible policies
+**Setup**: Follow the [Domain Management Guide](./domain-management.md)
+
+### Container Access Map
+
+When running `docker-compose --profile full up -d`, you get **22 containers**:
+
+**Core Services (6)**:
+- Frontend (3000), Backend (3001), Worker, PostgreSQL (5432), MongoDB (27017), Redis (6379)
+
+**Monitoring (3)**:
+- Prometheus (9090), Grafana (3030), Jaeger (16686)
+
+**Logging - ELK (4)**:
+- Elasticsearch (9200), Logstash (5044), Kibana (5601), Filebeat
+
+**Metrics Exporters (5)**:
+- Node Exporter (9100), cAdvisor (8080), Redis Exporter (9121), PostgreSQL Exporter (9187), MongoDB Exporter (9216)
+
+**Development Tools (1)**:
+- MailHog (8025)
+
+**Load Balancing (1)**:
+- Nginx (80/443)
+
+**Alerting (1)**:
+- AlertManager (9093)
+
+See [Nginx Reverse Proxy Guide - Container Access Map](./nginx-reverse-proxy.md#container-access-map) for detailed port mapping and routing rules.
+
+### Quick Setup Examples
+
+#### Docker Compose with Nginx
+
+```bash
+# 1. Start full stack
+docker-compose --profile full up -d
+
+# 2. Nginx is now routing all traffic
+# Access services:
+curl http://localhost/              # Frontend
+curl http://localhost/api/health    # Backend API
+curl http://localhost/grafana/      # Grafana
+```
+
+See: [Nginx Reverse Proxy Guide - Method 1: Docker Container](./nginx-reverse-proxy.md#method-1-nginx-as-docker-container-recommended)
+
+#### Kubernetes with Ingress
+
+```yaml
+# ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: reporunner-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  rules:
+  - host: app.example.com
+    http:
+      paths:
+      - path: /api/*
+        backend:
+          service:
+            name: backend
+            port: 3001
+      - path: /*
+        backend:
+          service:
+            name: frontend
+            port: 3000
+```
+
+See: [Kubernetes Ingress Documentation](../kubernetes/ingress.md)
+
+#### AWS with Application Load Balancer
+
+```bash
+# Deploy ALB with path-based routing
+cd infrastructure/terraform/aws/modules/alb
+terraform init
+terraform apply
+
+# ALB automatically routes:
+# /api/* → Backend Target Group (3001)
+# /socket.io/* → Backend Target Group (3001)
+# /grafana/* → Grafana Target Group (3030)
+# /* → Frontend Target Group (3000)
+```
+
+See: [AWS ALB Configuration Guide](./load-balancers/aws-alb.md)
+
+### SSL/TLS Certificates
+
+**Free Options**:
+- **Let's Encrypt**: Free, auto-renewing certificates (recommended)
+- **AWS ACM**: Free for AWS services (ALB, CloudFront)
+- **GCP Managed Certificates**: Free for GCP Load Balancers
+- **Cloudflare**: Free SSL with CDN
+
+**Commercial Options**:
+- DigiCert, GlobalSign, Sectigo for enterprise requirements
+
+See: [Domain Management Guide - SSL/TLS Certificates](./domain-management.md#ssltls-certificates)
+
+### Troubleshooting Routing Issues
+
+**502 Bad Gateway**:
+```bash
+# Check if backend is running
+docker ps | grep backend
+curl http://localhost:3001/health
+
+# Check nginx logs
+docker logs reporunner-nginx
+```
+
+**WebSocket Connection Fails**:
+```bash
+# Verify upgrade headers in nginx config
+# Ensure timeout is sufficient (7d recommended)
+```
+
+**SSL Certificate Not Trusted**:
+```bash
+# Verify certificate chain
+openssl s_client -connect app.example.com:443 -showcerts
+
+# Check DNS propagation
+dig app.example.com
+```
+
+See: [Nginx Troubleshooting](./nginx-reverse-proxy.md#troubleshooting)
 
 ---
 
