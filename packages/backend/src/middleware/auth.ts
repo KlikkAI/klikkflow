@@ -318,6 +318,8 @@ export class AuthMiddleware {
 
   /**
    * Extract token from Authorization header or cookies
+   * NOTE: Query parameter extraction removed for security (tokens exposed in logs/history)
+   * For WebSocket auth, use Sec-WebSocket-Protocol or upgrade to custom headers
    */
   private extractToken(req: Request): string | null {
     // Check Authorization header
@@ -341,10 +343,9 @@ export class AuthMiddleware {
       return req.cookies.token;
     }
 
-    // Check query parameter (for websocket connections)
-    if (req.query?.token && typeof req.query.token === 'string') {
-      return req.query.token;
-    }
+    // SECURITY: Query parameter extraction removed
+    // Tokens in URLs are logged in server access logs, browser history, and referrer headers
+    // For WebSocket connections, use Sec-WebSocket-Protocol header instead
 
     return null;
   }

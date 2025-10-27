@@ -17,6 +17,7 @@ interface AuthResult {
 
 export class AuthService {
   private static instance: AuthService;
+  private static readonly MAX_REFRESH_TOKENS = 5; // Limit refresh tokens per user
 
   private constructor() {}
 
@@ -78,8 +79,8 @@ export class AuthService {
         user.organizationId
       );
 
-      // Store refresh token
-      user.refreshTokens.push(refreshToken);
+      // Store refresh token with rotation (limit to prevent memory issues)
+      this.addRefreshToken(user, refreshToken);
       await user.save();
 
       logger.info(`New user registered: ${user.email}`);
@@ -155,8 +156,8 @@ export class AuthService {
         user.organizationId
       );
 
-      // Store refresh token and update last login
-      user.refreshTokens.push(refreshToken);
+      // Store refresh token with rotation and update last login
+      this.addRefreshToken(user, refreshToken);
       user.lastLogin = new Date();
       await user.save();
 
@@ -220,9 +221,9 @@ export class AuthService {
         user.organizationId
       );
 
-      // Remove old refresh token and add new one
+      // Remove old refresh token and add new one with rotation
       user.refreshTokens = user.refreshTokens.filter((token) => token !== refreshToken);
-      user.refreshTokens.push(newRefreshToken);
+      this.addRefreshToken(user, newRefreshToken);
       await user.save();
 
       logger.info(`Token refreshed for user: ${user.email}`);
@@ -278,12 +279,16 @@ export class AuthService {
         }
       }
 
-      // If email is being updated, check if it's already taken (use $eq to prevent NoSQL injection)
+      // If email is being updated, check if it's already taken and require re-verification
       if (filteredUpdates.email) {
         const existingUser = await User.findOne({ email: { $eq: filteredUpdates.email } });
         if (existingUser && existingUser._id.toString() !== userId) {
           throw new AppError('Email already in use', 409);
         }
+        // Security: Require email re-verification when email changes
+        // This prevents account takeover if someone gains temporary access
+        filteredUpdates.isEmailVerified = false;
+        logger.info(`Email changed for user ${userId}, email verification required`);
       }
 
       const user = await User.findByIdAndUpdate(userId, filteredUpdates, {
@@ -369,5 +374,21 @@ export class AuthService {
       logger.error('Logout error:', error);
       // Don't throw error on logout
     }
+  }
+
+  /**
+   * Add refresh token with automatic rotation (FIFO)
+   * Limits tokens to MAX_REFRESH_TOKENS to prevent memory exhaustion
+   */
+  private addRefreshToken(
+    user: { refreshTokens: string[]; email: string },
+    refreshToken: string
+  ): void {
+    // Remove oldest token if we've hit the limit
+    if (user.refreshTokens.length >= AuthService.MAX_REFRESH_TOKENS) {
+      user.refreshTokens.shift(); // Remove oldest (first) token
+      logger.info(`Refresh token limit reached for user ${user.email}, removing oldest token`);
+    }
+    user.refreshTokens.push(refreshToken);
   }
 }

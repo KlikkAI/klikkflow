@@ -79,11 +79,19 @@ export class AuthController extends BaseController {
   };
 
   /**
-   * Logout user
+   * Logout user - Invalidates refresh token
    */
-  logout = async (_req: Request, res: Response) => {
+  logout = async (req: Request, res: Response) => {
+    const userId = this.getUserId(req);
+    const { refreshToken } = req.body;
+
+    // Invalidate the refresh token
+    await this.authService.logout(userId, refreshToken);
+
     // Generate a simple session ID for the response
     const sessionId = `session_${Date.now()}_${randomBytes(6).toString('hex')}`;
+
+    logger.info(`User logged out: ${userId}`);
 
     this.sendSuccess(
       res,

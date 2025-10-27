@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { type SignOptions } from 'jsonwebtoken';
 
 export interface TokenPayload {
   userId: string;
@@ -16,9 +16,23 @@ export interface DecodedToken extends TokenPayload {
 }
 
 export class JWTService {
-  private static readonly JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key';
-  private static readonly ACCESS_TOKEN_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
-  private static readonly REFRESH_TOKEN_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '30d';
+  private static readonly JWT_SECRET = (() => {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error(
+        'CRITICAL SECURITY ERROR: JWT_SECRET environment variable is required. ' +
+          'Please set a strong, random secret key in your environment configuration.'
+      );
+    }
+    if (secret.length < 32) {
+      throw new Error(
+        'SECURITY WARNING: JWT_SECRET must be at least 32 characters long for adequate security.'
+      );
+    }
+    return secret;
+  })();
+  private static readonly ACCESS_TOKEN_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '15m';
+  private static readonly REFRESH_TOKEN_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
 
   /**
    * Generate access token
@@ -41,9 +55,10 @@ export class JWTService {
       type: 'access',
     };
 
+    // Type assertion needed because env vars are strings but JWT expects specific StringValue type
     return jwt.sign(payload, JWTService.JWT_SECRET, {
-      expiresIn: JWTService.ACCESS_TOKEN_EXPIRES_IN as any,
-    });
+      expiresIn: JWTService.ACCESS_TOKEN_EXPIRES_IN,
+    } as SignOptions);
   }
 
   /**
@@ -67,9 +82,10 @@ export class JWTService {
       type: 'refresh',
     };
 
+    // Type assertion needed because env vars are strings but JWT expects specific StringValue type
     return jwt.sign(payload, JWTService.JWT_SECRET, {
-      expiresIn: JWTService.REFRESH_TOKEN_EXPIRES_IN as any,
-    });
+      expiresIn: JWTService.REFRESH_TOKEN_EXPIRES_IN,
+    } as SignOptions);
   }
 
   /**
