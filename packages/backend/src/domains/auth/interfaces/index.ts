@@ -52,3 +52,36 @@ export interface IUserProfile {
   createdAt: Date;
   updatedAt: Date;
 }
+
+/**
+ * API Key interfaces
+ */
+
+export interface ICreateApiKeyRequest {
+  name: string;
+  permissions?: string[];
+  expiresIn?: number; // Duration in seconds
+  ipWhitelist?: string[];
+}
+
+export interface IApiKeyResponse {
+  id: string;
+  name: string;
+  maskedKey: string;
+  permissions: string[];
+  isActive: boolean;
+  lastUsedAt?: Date;
+  expiresAt?: Date;
+  requestCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ICreateApiKeyResponse extends IApiKeyResponse {
+  key: string; // Full API key (only shown once)
+}
+
+export interface IUpdateApiKeyRequest {
+  permissions?: string[];
+  name?: string;
+}

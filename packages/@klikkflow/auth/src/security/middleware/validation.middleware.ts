@@ -804,11 +804,21 @@ export const CommonSchemas = {
         maxLength: 128,
         pattern: /^[A-Za-z\d@$!%*?&]+$/,
         custom: (value: unknown) => {
-          if (typeof value !== 'string') return 'Password must be a string';
-          if (!/[a-z]/.test(value)) return 'Password must contain lowercase letter';
-          if (!/[A-Z]/.test(value)) return 'Password must contain uppercase letter';
-          if (!/\d/.test(value)) return 'Password must contain number';
-          if (!/[@$!%*?&]/.test(value)) return 'Password must contain special character';
+          if (typeof value !== 'string') {
+            return 'Password must be a string';
+          }
+          if (!/[a-z]/.test(value)) {
+            return 'Password must contain lowercase letter';
+          }
+          if (!/[A-Z]/.test(value)) {
+            return 'Password must contain uppercase letter';
+          }
+          if (!/\d/.test(value)) {
+            return 'Password must contain number';
+          }
+          if (!/[@$!%*?&]/.test(value)) {
+            return 'Password must contain special character';
+          }
           return true;
         },
       },

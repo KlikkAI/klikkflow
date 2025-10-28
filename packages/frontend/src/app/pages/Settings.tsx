@@ -10,12 +10,10 @@
 import { Logger } from '@klikkflow/core';
 import type React from 'react';
 import { useEffect, useState } from 'react';
-import { AuthApiService } from '@/core';
+import { ApiKeysSection } from '@/app/components/Settings/ApiKeysSection';
 import type { PageAction, PropertyRendererConfig } from '@/design-system';
 import { PageTemplates, UniversalForm } from '@/design-system';
 
-const _authApiService = new AuthApiService();
-void _authApiService; // Suppress unused variable warning
 const logger = new Logger('Settings');
 
 interface SettingsData {
@@ -217,7 +215,7 @@ export const Settings: React.FC = () => {
   ];
 
   // Handle form submissions
-  const handleSave = async (formData: Record<string, any>, section: string) => {
+  const handleSave = async (formData: Record<string, unknown>, section: string) => {
     setIsLoading(true);
     try {
       // Update settings in state
@@ -317,6 +315,13 @@ export const Settings: React.FC = () => {
           loading={isLoading}
         />
       ),
+    },
+    {
+      id: 'api-keys-settings',
+      title: 'API Keys',
+      subtitle: 'Manage API keys for programmatic access',
+      type: 'content' as const,
+      data: <ApiKeysSection />,
     },
   ];
 

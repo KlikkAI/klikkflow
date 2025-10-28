@@ -73,7 +73,6 @@ const EnhancedTransformPropertyPanel: React.FC<EnhancedTransformPropertyPanelPro
       const DANGEROUS_KEYS = ['__proto__', 'constructor', 'prototype'];
       for (const key of keys) {
         if (DANGEROUS_KEYS.includes(key)) {
-          console.error(`Dangerous property key rejected: ${key}`);
           return;
         }
       }

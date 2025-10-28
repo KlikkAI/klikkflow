@@ -215,7 +215,7 @@ export const socketOptionalAuthMiddleware = async (
     }
 
     next();
-  } catch (error) {
+  } catch (_error) {
     // For optional auth, continue without user data on error
     logger.debug('WebSocket optional authentication failed, continuing as anonymous', {
       socketId: socket.id,

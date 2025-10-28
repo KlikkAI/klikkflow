@@ -35,7 +35,6 @@ const getAllowedOrigins = (): string[] => {
   if (!process.env.CORS_ORIGIN) {
     // In production, require explicit CORS_ORIGIN configuration
     if (process.env.NODE_ENV === 'production') {
-      console.warn('WARNING: CORS_ORIGIN not set in production environment');
     }
     return defaultOrigins;
   }
@@ -45,11 +44,9 @@ const getAllowedOrigins = (): string[] => {
   // Validate origins - reject wildcards and non-HTTP(S) origins
   const validOrigins = origins.filter((origin) => {
     if (origin === '*') {
-      console.error('ERROR: Wildcard (*) origin not allowed with credentials');
       return false;
     }
     if (!(origin.startsWith('http://') || origin.startsWith('https://'))) {
-      console.error(`ERROR: Invalid origin protocol: ${origin}`);
       return false;
     }
     return true;

@@ -42,7 +42,9 @@ router.post(
     body('redirectUri')
       .optional()
       .custom((value) => {
-        if (!value) return true; // Optional field
+        if (!value) {
+          return true; // Optional field
+        }
         return isValidOAuthRedirectURI(value);
       })
       .withMessage('Invalid or insecure redirect URI'),

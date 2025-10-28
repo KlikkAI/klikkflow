@@ -17,7 +17,7 @@ const statAsync = promisify(fs.stat);
  * @param baseDir - The allowed base directory (default: /tmp/uploads)
  * @returns Sanitized path or throws error if path traversal detected
  */
-function sanitizeFilePath(filePath: string, baseDir = '/tmp/uploads'): string {
+function _sanitizeFilePath(filePath: string, baseDir = '/tmp/uploads'): string {
   // Resolve both paths to absolute paths
   const resolvedBase = path.resolve(baseDir);
   const resolvedPath = path.resolve(filePath);

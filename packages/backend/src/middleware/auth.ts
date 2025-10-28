@@ -7,6 +7,7 @@ import type { AuthenticatedUser } from '@klikkflow/shared';
 import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { UserRepository } from '../domains/auth/repositories/UserRepository';
+import { ApiKeyService } from '../domains/auth/services/ApiKeyService';
 import type { Permission } from '../services/PermissionService';
 import { AppError } from './errorHandlers';
 
@@ -30,19 +31,32 @@ export interface AuthPayload {
 
 export class AuthMiddleware {
   private userRepository: UserRepository;
+  private apiKeyService: ApiKeyService;
 
   constructor() {
     this.userRepository = new UserRepository();
+    this.apiKeyService = ApiKeyService.getInstance();
   }
 
   /**
-   * Verify JWT token and attach user to request
+   * Verify JWT token or API key and attach user to request
+   * Supports both JWT (Bearer token) and API key (x-api-key header) authentication
    */
   authenticate = async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
     try {
+      // Check for API key first (higher priority for API clients)
+      const apiKey = this.extractApiKey(req);
+      if (apiKey) {
+        return await this.authenticateWithApiKey(req, apiKey, next);
+      }
+
+      // Fall back to JWT authentication
       const token = this.extractToken(req);
       if (!token) {
-        throw new AppError('Authentication token is required', 401);
+        throw new AppError(
+          'Authentication required - provide Bearer token or x-api-key header',
+          401
+        );
       }
 
       const secret = process.env.JWT_SECRET;
@@ -84,6 +98,52 @@ export class AuthMiddleware {
       } else {
         next(error);
       }
+    }
+  };
+
+  /**
+   * Authenticate using API key
+   */
+  private authenticateWithApiKey = async (
+    req: Request,
+    apiKey: string,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      // Extract IP address for whitelist checking
+      const ipAddress = req.ip || req.socket.remoteAddress || undefined;
+
+      // Validate API key
+      const userId = await this.apiKeyService.validateApiKey(apiKey, ipAddress);
+      if (!userId) {
+        throw new AppError('Invalid or expired API key', 401);
+      }
+
+      // Load user from database
+      const user = await this.userRepository.findById(userId);
+      if (!user?.isActive) {
+        throw new AppError('User account not found or inactive', 401);
+      }
+
+      // Check if user is locked
+      if (user.isLocked()) {
+        throw new AppError('Account is temporarily locked', 423);
+      }
+
+      // Attach user data to request
+      req.user = {
+        id: user._id.toString(),
+        email: user.email,
+        role: user.role,
+        roles: user.role ? [user.role] : [],
+        permissions: user.permissions || [],
+        organizationId: user.organizationId,
+        isEmailVerified: user.isEmailVerified,
+      };
+
+      next();
+    } catch (error) {
+      next(error);
     }
   };
 
@@ -315,6 +375,25 @@ export class AuthMiddleware {
       next(error);
     }
   };
+
+  /**
+   * Extract API key from x-api-key header or query parameter
+   */
+  private extractApiKey(req: Request): string | null {
+    // Check x-api-key header (preferred method)
+    const apiKeyHeader = req.headers['x-api-key'];
+    if (apiKeyHeader && typeof apiKeyHeader === 'string') {
+      return apiKeyHeader;
+    }
+
+    // Check query parameter (less secure, but useful for webhook callbacks)
+    const apiKeyQuery = req.query.api_key || req.query.apiKey;
+    if (apiKeyQuery && typeof apiKeyQuery === 'string') {
+      return apiKeyQuery;
+    }
+
+    return null;
+  }
 
   /**
    * Extract token from Authorization header or cookies

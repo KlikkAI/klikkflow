@@ -6,7 +6,13 @@ import {
   relaxedRateLimit,
   strictRateLimit,
 } from '../../../middleware/rate-limit.middleware';
+import { ApiKeyController } from '../controllers/ApiKeyController';
 import { AuthController } from '../controllers/AuthController';
+import {
+  apiKeyIdValidation,
+  createApiKeyValidation,
+  updateApiKeyValidation,
+} from '../validators/apiKeyValidators';
 import {
   changePasswordValidation,
   loginValidation,
@@ -17,6 +23,7 @@ import {
 
 const router: Router = express.Router();
 const authController = new AuthController();
+const apiKeyController = new ApiKeyController();
 
 /**
  * @route   POST /auth/register
@@ -99,6 +106,87 @@ router.put(
   authenticate,
   changePasswordValidation,
   enhancedCatchAsync(authController.changePassword)
+);
+
+/**
+ * API Key Management Routes
+ */
+
+/**
+ * @route   GET /auth/api-keys
+ * @desc    Get all API keys for the authenticated user
+ * @access  Private
+ */
+router.get(
+  '/api-keys',
+  relaxedRateLimit,
+  authenticate,
+  enhancedCatchAsync(apiKeyController.getApiKeys)
+);
+
+/**
+ * @route   GET /auth/api-keys/:keyId
+ * @desc    Get a specific API key by ID
+ * @access  Private
+ */
+router.get(
+  '/api-keys/:keyId',
+  relaxedRateLimit,
+  authenticate,
+  apiKeyIdValidation,
+  enhancedCatchAsync(apiKeyController.getApiKeyById)
+);
+
+/**
+ * @route   POST /auth/api-keys
+ * @desc    Create a new API key
+ * @access  Private
+ */
+router.post(
+  '/api-keys',
+  moderateRateLimit,
+  authenticate,
+  createApiKeyValidation,
+  enhancedCatchAsync(apiKeyController.createApiKey)
+);
+
+/**
+ * @route   PATCH /auth/api-keys/:keyId
+ * @desc    Update API key permissions
+ * @access  Private
+ */
+router.patch(
+  '/api-keys/:keyId',
+  moderateRateLimit,
+  authenticate,
+  apiKeyIdValidation,
+  updateApiKeyValidation,
+  enhancedCatchAsync(apiKeyController.updateApiKey)
+);
+
+/**
+ * @route   DELETE /auth/api-keys/:keyId
+ * @desc    Revoke (delete) an API key
+ * @access  Private
+ */
+router.delete(
+  '/api-keys/:keyId',
+  moderateRateLimit,
+  authenticate,
+  apiKeyIdValidation,
+  enhancedCatchAsync(apiKeyController.revokeApiKey)
+);
+
+/**
+ * @route   POST /auth/api-keys/cleanup
+ * @desc    Cleanup expired API keys (admin or scheduled job)
+ * @access  Private
+ */
+router.post(
+  '/api-keys/cleanup',
+  strictRateLimit,
+  authenticate,
+  enhancedCatchAsync(apiKeyController.cleanupExpiredKeys)
 );
 
 export default router;

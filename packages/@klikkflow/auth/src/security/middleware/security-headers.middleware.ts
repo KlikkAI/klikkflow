@@ -118,7 +118,7 @@ export function createCorsMiddleware(config: CorsConfig = {}): RequestHandler {
     }
     // CodeQL fix: Use callback pattern instead of boolean true (Alert #133)
     // This makes the permissive CORS explicit and gives CodeQL better flow analysis
-    corsOptions.origin = (origin, callback) => {
+    corsOptions.origin = (_origin, callback) => {
       // Explicitly allow all origins in development only
       // Production check above ensures this never runs in production
       callback(null, true);

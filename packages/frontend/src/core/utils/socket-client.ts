@@ -136,45 +136,24 @@ export class SocketClient {
       return;
     }
 
-    this.socket.on('connect', () => {
-      console.log('✅ WebSocket connected', {
-        id: this.socket?.id,
-        transport: this.socket?.io.engine.transport.name,
-      });
-    });
+    this.socket.on('connect', () => {});
 
-    this.socket.on('disconnect', (reason) => {
-      console.log('❌ WebSocket disconnected', { reason });
-    });
+    this.socket.on('disconnect', (_reason) => {});
 
     this.socket.on('connect_error', (error) => {
-      console.error('🔥 WebSocket connection error', {
-        error: error.message,
-        description: error.message,
-      });
-
       // Handle authentication errors
       if (error.message === 'Authentication required' || error.message === 'Invalid token') {
-        console.error('Authentication failed - token may be expired or invalid');
         this.disconnect();
       }
     });
 
-    this.socket.on('error', (error) => {
-      console.error('🔥 WebSocket error', error);
-    });
+    this.socket.on('error', (_error) => {});
 
-    this.socket.io.on('reconnect', (attempt) => {
-      console.log('🔄 WebSocket reconnected', { attempt });
-    });
+    this.socket.io.on('reconnect', (_attempt) => {});
 
-    this.socket.io.on('reconnect_attempt', (attempt) => {
-      console.log('🔄 WebSocket reconnection attempt', { attempt });
-    });
+    this.socket.io.on('reconnect_attempt', (_attempt) => {});
 
-    this.socket.io.on('reconnect_failed', () => {
-      console.error('🔥 WebSocket reconnection failed');
-    });
+    this.socket.io.on('reconnect_failed', () => {});
   }
 }
 

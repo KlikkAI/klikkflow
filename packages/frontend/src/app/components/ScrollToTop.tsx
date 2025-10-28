@@ -17,7 +17,7 @@ export const ScrollToTop: React.FC = () => {
   useEffect(() => {
     // Scroll to top instantly on route change
     window.scrollTo(0, 0);
-  }, [pathname]);
+  }, []);
 
   // This component doesn't render anything
   return null;
