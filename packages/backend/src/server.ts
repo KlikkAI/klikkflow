@@ -5,10 +5,16 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import 'express-async-errors';
 import { createServer } from 'node:http';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
 
-// Load environment variables
-dotenv.config();
+// Get the directory name for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Load environment variables from workspace root
+dotenv.config({ path: resolve(__dirname, '../../../.env') });
 
 import { DatabaseConfig } from './config/database.js';
 import { initializeSocketIO } from './config/socket.js';
