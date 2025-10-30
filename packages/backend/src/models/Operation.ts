@@ -83,7 +83,6 @@ const operationSchema = new Schema<IOperation>(
     operationId: {
       type: String,
       required: true,
-      unique: true,
     },
     parentOperationId: {
       type: String,

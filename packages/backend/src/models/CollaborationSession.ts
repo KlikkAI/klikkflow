@@ -61,7 +61,6 @@ const collaborationSessionSchema = new Schema<ICollaborationSession>(
     sessionId: {
       type: String,
       required: true,
-      unique: true,
     },
     ownerId: {
       type: String,
@@ -189,9 +188,8 @@ collaborationSessionSchema.index({ sessionId: 1 }, { unique: true });
 collaborationSessionSchema.index({ ownerId: 1 });
 collaborationSessionSchema.index({ organizationId: 1 });
 collaborationSessionSchema.index({ status: 1 });
-collaborationSessionSchema.index({ lastActivity: 1 });
 
-// TTL index to automatically cleanup old sessions (7 days)
+// TTL index to automatically cleanup old sessions (7 days) - also serves as query index
 collaborationSessionSchema.index({ lastActivity: 1 }, { expireAfterSeconds: 7 * 24 * 60 * 60 });
 
 // Virtual for active participants

@@ -38,7 +38,6 @@ const apiKeySchema = new Schema<IApiKey>(
     keyHash: {
       type: String,
       required: [true, 'API key hash is required'],
-      unique: true,
       select: false, // Don't include hash in queries by default
     },
     keyPrefix: {
@@ -79,7 +78,6 @@ const apiKeySchema = new Schema<IApiKey>(
     },
     expiresAt: {
       type: Date,
-      index: true, // Index for querying expired keys
     },
     ipWhitelist: {
       type: [String],
