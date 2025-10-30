@@ -11,6 +11,7 @@ import oauthRoutes from '../domains/oauth/routes/oauthRoutes.js';
 // Import domain routes
 import workflowRoutes from '../domains/workflows/routes/workflowRoutes.js';
 import auditRoutes from './audit.js';
+import instanceRoutes from './instances.js';
 import marketplaceRoutes from './marketplace.js';
 import scheduleRoutes from './schedules.js';
 import securityRoutes from './security.js';
@@ -21,6 +22,7 @@ const router = Router();
 
 // Mount route modules
 router.use('/audit', auditRoutes);
+router.use('/instances', instanceRoutes);
 router.use('/triggers', triggerRoutes);
 router.use('/schedules', scheduleRoutes);
 router.use('/security', securityRoutes);
@@ -47,6 +49,7 @@ router.get('/health', (_req, res) => {
       collaboration: 'operational',
       oauth: 'operational',
       audit: 'operational',
+      instances: 'operational',
       triggers: 'operational',
       schedules: 'operational',
       security: 'operational',
@@ -71,6 +74,7 @@ router.get('/info', (_req, res) => {
         collaboration: '/api/collaboration',
         oauth: '/api/oauth',
         audit: '/api/audit',
+        instances: '/api/instances',
         triggers: '/api/triggers',
         schedules: '/api/schedules',
         security: '/api/security',
