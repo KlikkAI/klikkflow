@@ -47,6 +47,7 @@ export const DocsLayout: React.FC = () => {
       '/docs/workflow-examples': 'docs/user-guide/WORKFLOW_EXAMPLES.md',
       '/docs/deployment/docker': 'docs/deployment/docker/README.md',
       '/docs/deployment/kubernetes': 'docs/deployment/kubernetes/README.md',
+      '/docs/deployment/domain-management': 'docs/deployment/domain-management.md',
       '/docs/operations/monitoring': 'docs/operations/monitoring/README.md',
       '/docs/operations/logging': 'docs/operations/logging/README.md',
       '/docs/operations/scaling': 'docs/operations/scaling/README.md',

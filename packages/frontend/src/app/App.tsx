@@ -21,6 +21,7 @@ import Documentation from './pages/Documentation';
 import {
   CloudProviders,
   DockerDeployment,
+  DomainManagement,
   GettingStarted,
   IntegrationsGuide,
   KubernetesDeployment,
@@ -92,6 +93,7 @@ function App() {
             <Route path="deployment/docker" element={<DockerDeployment />} />
             <Route path="deployment/kubernetes" element={<KubernetesDeployment />} />
             <Route path="deployment/cloud" element={<CloudProviders />} />
+            <Route path="deployment/domain-management" element={<DomainManagement />} />
 
             {/* API Reference */}
             <Route path="api/plugin-marketplace" element={<PluginMarketplaceAPI />} />

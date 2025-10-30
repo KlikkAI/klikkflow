@@ -6,6 +6,7 @@
 
 export { CloudProviders } from './CloudProviders';
 export { DockerDeployment } from './DockerDeployment';
+export { DomainManagement } from './DomainManagement';
 export { GettingStarted } from './GettingStarted';
 export { IntegrationsGuide } from './IntegrationsGuide';
 export { KubernetesDeployment } from './KubernetesDeployment';

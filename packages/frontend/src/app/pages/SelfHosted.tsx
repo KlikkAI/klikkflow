@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Footer } from '../components/Integrations/Landing/Footer';
 import { Header } from '../components/Integrations/Landing/Header';
 
@@ -319,7 +320,25 @@ export const SelfHosted: React.FC = () => {
                 ))}
               </div>
 
-              <div className="mt-6 p-4 bg-blue-900/30 border border-blue-700 rounded-lg">
+              {/* Domain Configuration Info */}
+              <div className="mt-6 p-4 bg-purple-900/30 border border-purple-700 rounded-lg">
+                <div className="flex items-center gap-2 text-purple-300 mb-2">
+                  <Globe className="w-4 h-4" />
+                  <span className="font-medium">Custom Domain Configuration</span>
+                </div>
+                <p className="text-purple-200 text-sm">
+                  Want to use your own domain or set up subdomains for multi-tenant deployment?{' '}
+                  <Link
+                    to="/docs/deployment/domain-management"
+                    className="underline hover:text-white font-semibold"
+                  >
+                    View our Domain & Subdomain Management guide
+                  </Link>{' '}
+                  for AWS, GCP, Azure, and Cloudflare configuration.
+                </p>
+              </div>
+
+              <div className="mt-4 p-4 bg-blue-900/30 border border-blue-700 rounded-lg">
                 <div className="flex items-center gap-2 text-blue-300 mb-2">
                   <ExternalLink className="w-4 h-4" />
                   <span className="font-medium">Need Help?</span>

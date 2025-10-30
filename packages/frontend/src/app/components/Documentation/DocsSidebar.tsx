@@ -52,6 +52,7 @@ const docSections: DocSection[] = [
       { title: 'Docker Deployment', path: '/docs/deployment/docker' },
       { title: 'Kubernetes', path: '/docs/deployment/kubernetes' },
       { title: 'Cloud Providers', path: '/docs/deployment/cloud' },
+      { title: 'Domain & Subdomain Management', path: '/docs/deployment/domain-management' },
     ],
   },
   {
