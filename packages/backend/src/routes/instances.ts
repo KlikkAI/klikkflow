@@ -5,6 +5,7 @@
 
 import express, { type Router } from 'express';
 import { InstanceController } from '../controllers/InstanceController';
+import { requireAdmin } from '../middleware/admin';
 import { authenticate, optionalAuth } from '../middleware/auth';
 import { enhancedCatchAsync } from '../middleware/enhancedErrorHandlers';
 import { moderateRateLimit, relaxedRateLimit } from '../middleware/rate-limit.middleware';
@@ -102,7 +103,7 @@ router.get(
   '/statistics',
   relaxedRateLimit,
   authenticate,
-  // TODO: Add admin middleware
+  requireAdmin,
   enhancedCatchAsync(instanceController.getInstanceStatistics)
 );
 
@@ -115,7 +116,7 @@ router.post(
   '/cleanup',
   moderateRateLimit,
   authenticate,
-  // TODO: Add admin middleware
+  requireAdmin,
   cleanupValidation,
   enhancedCatchAsync(instanceController.cleanupStaleInstances)
 );

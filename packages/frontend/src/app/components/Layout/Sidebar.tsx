@@ -15,11 +15,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const { logout, user } = useAuthStore();
   const { createNewWorkflow } = useLeanWorkflowStore();
 
+  // Check if user has admin role
+  const userRole = user?.role;
+  const hasAdminRole = userRole ? ['admin', 'super_admin'].includes(userRole) : false;
+
   const navigation = [
     { name: 'Workflows', href: '/dashboard', icon: '🔄' },
     { name: 'Executions', href: '/executions', icon: '▶️' },
     { name: 'Credentials', href: '/credentials', icon: '🔐' },
     { name: 'Settings', href: '/settings', icon: '⚙️' },
+    ...(hasAdminRole ? [{ name: 'Instances', href: '/app/admin/instances', icon: '🖥️' }] : []),
   ];
 
   const handleCreateWorkflow = async () => {

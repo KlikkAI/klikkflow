@@ -4,6 +4,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { nodeRegistry } from '@/core';
 import { logger } from '@/core/services/LoggingService';
 import GlobalErrorBoundary from '@/design-system/components/ErrorBoundary/GlobalErrorBoundary';
+import AdminRoute from './components/Auth/AdminRoute';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 // Documentation components
 import { DocsLayout } from './components/Documentation';
@@ -12,6 +13,7 @@ import { RouteTransition } from './components/RouteTransition';
 import { ScrollToTop } from './components/ScrollToTop';
 import About from './pages/About';
 import APIReference from './pages/APIReference';
+import InstanceManagement from './pages/admin/InstanceManagement';
 import Contact from './pages/Contact';
 import Credentials from './pages/Credentials';
 import Dashboard from './pages/Dashboard';
@@ -122,6 +124,20 @@ function App() {
             <Route path="executions" element={<Executions />} />
             <Route path="credentials" element={<Credentials />} />
             <Route path="settings" element={<Settings />} />
+          </Route>
+
+          {/* Admin Routes */}
+          <Route
+            path="/app/admin/instances"
+            element={
+              <ProtectedRoute>
+                <AdminRoute>
+                  <Layout />
+                </AdminRoute>
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<InstanceManagement />} />
           </Route>
 
           {/* Legacy redirects for authenticated users */}
