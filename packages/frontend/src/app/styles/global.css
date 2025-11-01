@@ -128,8 +128,8 @@
 
   /* Card styling for dark theme */
   .ant-card {
-    background-color: #4b5563;
-    border-color: #6b7280;
+    background: transparent !important; /* Allow gradients to show through */
+    border-color: rgba(255, 255, 255, 0.35);
     color: #ffffff;
   }
 
@@ -219,13 +219,15 @@
   }
 
   .ant-modal-content {
-    background-color: #1f2937 !important; /* Dark background */
-    border: 1px solid #374151 !important;
+    background-color: rgba(255, 255, 255, 0.15) !important; /* Glassmorphism background */
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    backdrop-filter: blur(12px);
   }
 
   .ant-modal-header {
-    background-color: #1f2937 !important; /* Dark header */
-    border-bottom: 1px solid #374151 !important;
+    background-color: rgba(255, 255, 255, 0.15) !important; /* Glassmorphism header */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.25) !important;
+    backdrop-filter: blur(12px);
   }
 
   .ant-modal-title {
@@ -233,13 +235,15 @@
   }
 
   .ant-modal-body {
-    background-color: #1f2937 !important; /* Dark body */
+    background-color: rgba(255, 255, 255, 0.10) !important; /* Slightly less for body */
     color: #e5e7eb !important;
+    backdrop-filter: blur(12px);
   }
 
   .ant-modal-footer {
-    background-color: #1f2937 !important; /* Dark footer */
-    border-top: 1px solid #374151 !important;
+    background-color: rgba(255, 255, 255, 0.15) !important; /* Glassmorphism footer */
+    border-top: 1px solid rgba(255, 255, 255, 0.25) !important;
+    backdrop-filter: blur(12px);
   }
 
   /* Form elements in modals */
@@ -252,13 +256,14 @@
     color: #9ca3af !important;
   }
 
-  /* Input fields in modals - dark background */
+  /* Input fields in modals - glassmorphism background */
   .ant-modal .ant-input,
   .ant-modal .ant-input-number,
   .ant-modal .ant-input-number-input {
-    background-color: #374151 !important;
-    border-color: #6b7280 !important;
+    background-color: rgba(255, 255, 255, 0.15) !important; /* Glassmorphism */
+    border-color: rgba(255, 255, 255, 0.4) !important;
     color: #ffffff !important;
+    backdrop-filter: blur(8px);
   }
 
   .ant-modal .ant-input::placeholder,
@@ -268,20 +273,21 @@
 
   .ant-modal .ant-input:hover,
   .ant-modal .ant-input-number:hover {
-    border-color: #9ca3af !important;
+    border-color: rgba(255, 255, 255, 0.5) !important; /* Brighter on hover */
   }
 
   .ant-modal .ant-input:focus,
   .ant-modal .ant-input-number:focus,
   .ant-modal .ant-input-focused {
-    background-color: #374151 !important;
-    border-color: #3b82f6 !important;
+    background-color: rgba(255, 255, 255, 0.20) !important; /* Slight increase on focus */
+    border-color: #3b82f6 !important; /* Blue focus border */
   }
 
   /* Select dropdowns in modals */
   .ant-modal .ant-select-selector {
-    background-color: #374151 !important;
-    border-color: #6b7280 !important;
+    background-color: rgba(255, 255, 255, 0.15) !important; /* Glassmorphism */
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(8px);
     color: #ffffff !important;
   }
 
@@ -399,11 +405,11 @@
 
   /* Glassmorphism Panels */
   .glass-panel {
-    @apply bg-white/5 backdrop-blur-md border border-white/10 transition-all duration-300;
+    @apply bg-white/15 backdrop-blur-md border border-white/30 transition-all duration-300;
   }
 
   .glass-panel:hover {
-    @apply bg-white/10 border-white/20;
+    @apply bg-white/25 border-white/50;
   }
 
   /* Section Backgrounds */

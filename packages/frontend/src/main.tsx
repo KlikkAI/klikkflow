@@ -45,13 +45,13 @@ ReactDOM.createRoot(rootElement).render(
           colorError: '#ef4444', // red-500
 
           // Background colors with transparency for glassmorphism
-          colorBgContainer: 'rgba(255, 255, 255, 0.05)', // glass-panel equivalent
-          colorBgElevated: 'rgba(255, 255, 255, 0.08)',
+          colorBgContainer: 'rgba(255, 255, 255, 0.15)', // 3x more visible for normal state
+          colorBgElevated: 'rgba(255, 255, 255, 0.20)', // 2.5x more visible for elevated surfaces
           colorBgLayout: '#0f172a', // slate-900 (for gradient base)
 
           // Border colors with transparency
-          colorBorder: 'rgba(255, 255, 255, 0.2)',
-          colorBorderSecondary: 'rgba(255, 255, 255, 0.1)',
+          colorBorder: 'rgba(255, 255, 255, 0.35)', // 75% more visible borders
+          colorBorderSecondary: 'rgba(255, 255, 255, 0.25)', // More visible secondary borders
 
           // Text colors
           colorText: '#ffffff',
@@ -71,29 +71,29 @@ ReactDOM.createRoot(rootElement).render(
         },
         components: {
           Card: {
-            colorBgContainer: 'rgba(255, 255, 255, 0.05)',
-            colorBorderSecondary: 'rgba(255, 255, 255, 0.2)',
+            colorBgContainer: 'rgba(255, 255, 255, 0.15)', // 3x more visible
+            colorBorderSecondary: 'rgba(255, 255, 255, 0.35)', // Visible borders
           },
           Modal: {
-            contentBg: 'rgba(255, 255, 255, 0.05)',
-            headerBg: 'rgba(255, 255, 255, 0.05)',
+            contentBg: 'rgba(255, 255, 255, 0.15)', // 3x more visible
+            headerBg: 'rgba(255, 255, 255, 0.15)', // 3x more visible
           },
           Table: {
-            headerBg: 'rgba(255, 255, 255, 0.08)',
-            rowHoverBg: 'rgba(255, 255, 255, 0.1)',
+            headerBg: 'rgba(255, 255, 255, 0.20)', // 2.5x more visible
+            rowHoverBg: 'rgba(255, 255, 255, 0.25)', // 2.5x more visible hover
           },
           Input: {
-            colorBgContainer: 'rgba(255, 255, 255, 0.1)',
-            colorBorder: 'rgba(255, 255, 255, 0.3)',
+            colorBgContainer: 'rgba(255, 255, 255, 0.15)', // 50% more visible
+            colorBorder: 'rgba(255, 255, 255, 0.4)', // Stronger borders
             activeBorderColor: '#3b82f6',
           },
           Select: {
-            colorBgContainer: 'rgba(255, 255, 255, 0.1)',
-            colorBorder: 'rgba(255, 255, 255, 0.3)',
+            colorBgContainer: 'rgba(255, 255, 255, 0.15)', // 50% more visible
+            colorBorder: 'rgba(255, 255, 255, 0.4)', // Stronger borders
           },
           Button: {
-            colorBgContainer: 'rgba(255, 255, 255, 0.1)',
-            colorBorder: 'rgba(255, 255, 255, 0.2)',
+            colorBgContainer: 'rgba(255, 255, 255, 0.15)', // 50% more visible
+            colorBorder: 'rgba(255, 255, 255, 0.35)', // Visible borders
             primaryShadow: '0 0 20px rgba(59, 130, 246, 0.3)',
           },
         },

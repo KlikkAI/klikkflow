@@ -52,26 +52,29 @@
   overflow: auto;
 }
 
-/* Dark Table */
+/* Dark Table - Glassmorphism */
 .dark-table .ant-table {
-  background: #1f2937;
+  background: rgba(255, 255, 255, 0.08); /* Glassmorphism */
   color: #ffffff;
+  backdrop-filter: blur(10px);
 }
 
 .dark-table .ant-table-thead > tr > th {
-  background: #374151;
+  background: rgba(255, 255, 255, 0.15); /* Visible header */
   color: #ffffff;
-  border-bottom: 1px solid #4b5563;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
 }
 
 .dark-table .ant-table-tbody > tr > td {
-  background: #1f2937;
-  border-bottom: 1px solid #374151;
+  background: rgba(255, 255, 255, 0.08); /* Subtle rows */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   color: #d1d5db;
+  backdrop-filter: blur(10px);
 }
 
 .dark-table .ant-table-tbody > tr:hover > td {
-  background: #374151;
+  background: rgba(255, 255, 255, 0.20); /* Visible hover */
 }
 
 .dark-table .ant-pagination {
@@ -146,15 +149,17 @@
   color: #9ca3af;
 }
 
-/* Dark Modal */
+/* Dark Modal - Glassmorphism */
 .dark-modal .ant-modal-content {
-  background: #1f2937;
-  border: 1px solid #374151;
+  background: rgba(255, 255, 255, 0.15); /* Glassmorphism */
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(12px);
 }
 
 .dark-modal .ant-modal-header {
-  background: #111827;
-  border-bottom: 1px solid #374151;
+  background: rgba(255, 255, 255, 0.15); /* Match content */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
 }
 
 .dark-modal .ant-modal-title {
@@ -162,8 +167,9 @@
 }
 
 .dark-modal .ant-modal-body {
-  background: #1f2937;
+  background: rgba(255, 255, 255, 0.10); /* Slightly less for body */
   color: #ffffff;
+  backdrop-filter: blur(12px);
 }
 
 .dark-modal .ant-modal-close {
