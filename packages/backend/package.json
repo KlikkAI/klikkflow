@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@klikkflow/ai": "workspace:*",
+    "@klikkflow/auth": "workspace:*",
     "@klikkflow/core": "workspace:*",
     "@klikkflow/platform": "workspace:*",
     "@klikkflow/shared": "workspace:*",
