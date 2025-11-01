@@ -130,6 +130,9 @@ test-performance-data-*/
 # Temporary output directories
 new-output-dir/
 
+# Docker local overrides (laptop-specific configurations)
+docker-compose.override.yml
+
 # Additional development documentation (keep essential docs)
 DOCKER_FIXES.md
 DOCKER_OPENSOURCE_GUIDE.md
