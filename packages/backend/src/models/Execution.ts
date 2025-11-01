@@ -67,12 +67,12 @@ const nodeExecutionSchema = new Schema({
 const executionSchema = new Schema<IExecution>(
   {
     workflowId: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: [true, 'Workflow ID is required'],
       ref: 'Workflow',
     },
     userId: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: [true, 'User ID is required'],
       ref: 'User',
     },

@@ -25,7 +25,7 @@ import { ComponentGenerator, PageTemplates } from '@/design-system';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { workflows, executions, isLoading, fetchWorkflows, fetchExecutions } =
+  const { workflows, executions, isLoading, fetchWorkflows, fetchExecutions, createNewWorkflow } =
     useLeanWorkflowStore();
 
   useEffect(() => {
@@ -75,7 +75,13 @@ export const Dashboard: React.FC = () => {
       label: 'Create Workflow',
       type: 'primary',
       icon: <PlusOutlined />,
-      onClick: () => navigate('/app/workflow'),
+      onClick: async () => {
+        try {
+          await createNewWorkflow('Untitled Workflow', navigate);
+        } catch (error) {
+          console.error('Failed to create workflow:', error);
+        }
+      },
     },
   ];
 

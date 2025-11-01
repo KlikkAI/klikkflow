@@ -1,13 +1,14 @@
 /**
  * User Repository
- * TODO: Implement user data access
+ * Handles user data access operations
  */
 
+import { User } from '../../../models/User.js';
+
 export class UserRepository {
-  async findById(_id: string): Promise<any> {
-    // TODO: Implement findById
-    return null;
+  async findById(id: string): Promise<any> {
+    return await User.findById(id);
   }
 
-  // TODO: Implement other repository methods
+  // TODO: Implement other repository methods as needed
 }
