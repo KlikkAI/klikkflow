@@ -811,7 +811,7 @@ const WorkflowEditor: React.FC = () => {
         />
       )}
 
-      <div className="flex-1 flex">
+      <div className="flex-1 flex overflow-hidden">
         {/* Node Panel - hidden in fullscreen */}
         {!isFullscreen && (
           <AdvancedNodePanel
@@ -821,7 +821,7 @@ const WorkflowEditor: React.FC = () => {
         )}
 
         {/* Main Editor */}
-        <div className="flex-1 relative" ref={setContainerRef}>
+        <div className="flex-1 relative h-full" ref={setContainerRef}>
           <ReactFlowProvider>
             <ReactFlow
               nodes={memoizedNodes}

@@ -205,7 +205,7 @@ export const ExecutionToolbar: React.FC<ExecutionToolbarProps> = ({
   ];
 
   return (
-    <div className="execution-toolbar">
+    <div className="execution-toolbar flex-shrink-0">
       <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between">
         <Space>
           {/* Primary execution controls */}
