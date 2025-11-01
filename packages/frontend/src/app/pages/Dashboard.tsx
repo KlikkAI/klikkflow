@@ -19,6 +19,7 @@ import { Modal, message } from 'antd';
 import type React from 'react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { WorkflowDefinition, WorkflowExecution } from '@/core/schemas';
 import { useLeanWorkflowStore } from '@/core/stores/leanWorkflowStore';
 import type { PageSectionConfig, Statistic } from '@/design-system';
 import { ComponentGenerator, PageTemplates } from '@/design-system';
@@ -77,12 +78,12 @@ export const Dashboard: React.FC = () => {
       type: 'list',
       data: workflows.slice(0, 5),
       config: {
-        renderItem: (workflow: Record<string, unknown>) =>
+        renderItem: (workflow: WorkflowDefinition) =>
           ComponentGenerator.generateComponent({
             id: `workflow-${workflow.id}`,
             type: 'card',
-            title: workflow.name,
-            subtitle: workflow.description,
+            title: workflow.name as string,
+            subtitle: workflow.description as string,
             hoverable: true,
             actions: ComponentGenerator.generateActionBar([
               {
@@ -135,14 +136,14 @@ export const Dashboard: React.FC = () => {
       type: 'list',
       data: executions.slice(0, 5),
       config: {
-        renderItem: (execution: Record<string, unknown>) =>
+        renderItem: (execution: WorkflowExecution) =>
           ComponentGenerator.generateComponent({
             id: `execution-${execution.id}`,
             type: 'list-item',
             props: {
-              title: `Execution ${execution.id.slice(-8)}`,
-              description: `${execution.workflowName} • ${new Date(execution.startedAt).toLocaleString()}`,
-              status: execution.status,
+              title: `Execution ${(execution.id as string).slice(-8)}`,
+              description: `${execution.workflowName as string} • ${new Date(execution.startTime).toLocaleString()}`,
+              status: execution.status as string,
             },
           }),
         emptyText: 'No executions yet. Run a workflow to see execution history.',

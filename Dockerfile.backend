@@ -45,12 +45,14 @@ FROM base AS prod-deps
 COPY packages/backend/package.json ./packages/backend/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/@klikkflow/ai/package.json ./packages/@klikkflow/ai/
+COPY packages/@klikkflow/auth/package.json ./packages/@klikkflow/auth/
 COPY packages/@klikkflow/core/package.json ./packages/@klikkflow/core/
 COPY packages/@klikkflow/platform/package.json ./packages/@klikkflow/platform/
 
 # Copy dist folders for workspace packages (needed for pnpm workspace linking)
 COPY packages/shared/dist ./packages/shared/dist
 COPY packages/@klikkflow/ai/dist ./packages/@klikkflow/ai/dist
+COPY packages/@klikkflow/auth/dist ./packages/@klikkflow/auth/dist
 COPY packages/@klikkflow/core/dist ./packages/@klikkflow/core/dist
 COPY packages/@klikkflow/platform/dist ./packages/@klikkflow/platform/dist
 
@@ -61,6 +63,7 @@ RUN pnpm install --frozen-lockfile --ignore-scripts
 # Manually create symlinks for workspace packages (pnpm with shamefullyHoist:false may not create them)
 RUN mkdir -p node_modules/@klikkflow && \
     ln -sf ../../packages/@klikkflow/ai node_modules/@klikkflow/ai && \
+    ln -sf ../../packages/@klikkflow/auth node_modules/@klikkflow/auth && \
     ln -sf ../../packages/@klikkflow/core node_modules/@klikkflow/core && \
     ln -sf ../../packages/@klikkflow/platform node_modules/@klikkflow/platform && \
     ln -sf ../../packages/shared node_modules/@klikkflow/shared
@@ -87,6 +90,7 @@ COPY --chown=klikkflow:nodejs packages/backend/src ./packages/backend/src
 # Copy compiled dist for @klikkflow packages (libraries)
 COPY --chown=klikkflow:nodejs packages/shared/dist ./packages/shared/dist
 COPY --chown=klikkflow:nodejs packages/@klikkflow/ai/dist ./packages/@klikkflow/ai/dist
+COPY --chown=klikkflow:nodejs packages/@klikkflow/auth/dist ./packages/@klikkflow/auth/dist
 COPY --chown=klikkflow:nodejs packages/@klikkflow/core/dist ./packages/@klikkflow/core/dist
 COPY --chown=klikkflow:nodejs packages/@klikkflow/platform/dist ./packages/@klikkflow/platform/dist
 
@@ -103,6 +107,7 @@ COPY --chown=klikkflow:nodejs package.json pnpm-workspace.yaml ./
 COPY --chown=klikkflow:nodejs packages/backend/package.json ./packages/backend/
 COPY --chown=klikkflow:nodejs packages/shared/package.json ./packages/shared/
 COPY --chown=klikkflow:nodejs packages/@klikkflow/ai/package.json ./packages/@klikkflow/ai/
+COPY --chown=klikkflow:nodejs packages/@klikkflow/auth/package.json ./packages/@klikkflow/auth/
 COPY --chown=klikkflow:nodejs packages/@klikkflow/core/package.json ./packages/@klikkflow/core/
 COPY --chown=klikkflow:nodejs packages/@klikkflow/platform/package.json ./packages/@klikkflow/platform/
 

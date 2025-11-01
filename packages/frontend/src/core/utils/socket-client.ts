@@ -18,7 +18,6 @@ export interface SocketConfig {
 
 export class SocketClient {
   private socket: Socket | null = null;
-  private token: string | null = null;
 
   /**
    * Create authenticated Socket.IO connection
@@ -34,8 +33,6 @@ export class SocketClient {
    * @param config - Optional socket configuration
    */
   public connect(token: string, config: SocketConfig = {}): Socket {
-    this.token = token;
-
     const {
       url = process.env.VITE_API_URL || 'http://localhost:3001',
       autoConnect = true,

@@ -1,6 +1,6 @@
+import { isValidOAuthRedirectURI } from '@klikkflow/auth/utils/url-validator';
 import express, { type Router } from 'express';
 import { body } from 'express-validator';
-import { isValidOAuthRedirectURI } from '../../../../../@klikkflow/auth/src/utils/url-validator';
 import { authenticate } from '../../../middleware/auth';
 import { catchAsync } from '../../../middleware/errorHandlers';
 import {
