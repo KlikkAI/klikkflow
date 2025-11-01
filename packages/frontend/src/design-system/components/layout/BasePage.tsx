@@ -299,6 +299,7 @@ interface StatsCardProps {
     isPositive: boolean;
     label: string;
   };
+  color?: 'blue' | 'green' | 'purple' | 'orange';
   className?: string;
 }
 
@@ -308,10 +309,19 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   subtitle,
   icon,
   trend,
+  color = 'blue',
   className = '',
 }) => {
+  // Map color to gradient class
+  const colorClasses = {
+    blue: 'stats-card-blue',
+    green: 'stats-card-green',
+    purple: 'stats-card-purple',
+    orange: 'stats-card-orange',
+  };
+
   return (
-    <Card className={cn('bg-gray-800 border-gray-700', className)}>
+    <Card className={cn(colorClasses[color], className)}>
       <div className="flex items-start justify-between">
         <div>
           <p className="text-gray-400 text-sm mb-1">{title}</p>

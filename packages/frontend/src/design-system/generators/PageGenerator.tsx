@@ -127,6 +127,7 @@ export class PageGenerator {
                 value={stat.value}
                 icon={stat.icon}
                 trend={stat.trend}
+                color={stat.color as 'blue' | 'green' | 'purple' | 'orange'}
               />
             ))}
           </ResponsiveGrid>
@@ -221,6 +222,7 @@ export class PageGenerator {
                   value={stat.value}
                   icon={stat.icon}
                   trend={stat.trend}
+                  color={stat.color as 'blue' | 'green' | 'purple' | 'orange'}
                 />
               ))}
             </ResponsiveGrid>
