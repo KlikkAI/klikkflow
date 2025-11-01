@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "outDir": "./dist",
@@ -14,6 +14,7 @@
     "noUncheckedIndexedAccess": false,
     "isolatedModules": true,
     "declaration": true,
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],

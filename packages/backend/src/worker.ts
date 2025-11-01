@@ -1,8 +1,6 @@
-import dotenv from 'dotenv';
+// IMPORTANT: Load environment variables from root .env FIRST before any other imports
+import './config/env.js';
 import { DatabaseConfig } from './config/database';
-
-// Load environment variables
-dotenv.config();
 
 // Connect to databases
 const dbConfig = DatabaseConfig.getInstance();

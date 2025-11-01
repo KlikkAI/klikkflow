@@ -4,7 +4,8 @@ import { defineConfig, loadEnv } from 'vite';
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '');
+  // Load environment variables from workspace root (../../)
+  const env = loadEnv(mode, path.resolve(__dirname, '../../'), '');
 
   return {
     plugins: [react()],
