@@ -206,6 +206,7 @@ export class ComponentGenerator {
     actions: Array<{
       label: string;
       type?: 'primary' | 'default' | 'dashed' | 'text' | 'link';
+      danger?: boolean;
       icon?: React.ReactNode;
       onClick: () => void;
       disabled?: boolean;
@@ -226,6 +227,7 @@ export class ComponentGenerator {
           <Button
             key={action.label}
             type={action.type}
+            danger={action.danger}
             icon={action.icon}
             onClick={action.onClick}
             disabled={action.disabled}

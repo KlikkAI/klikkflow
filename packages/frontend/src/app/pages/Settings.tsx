@@ -238,21 +238,7 @@ export const Settings: React.FC = () => {
   };
 
   // Page actions
-  const actions: PageAction[] = [
-    {
-      label: 'Export Settings',
-      type: 'default',
-      onClick: () => {
-        const dataStr = JSON.stringify(settings, null, 2);
-        const dataBlob = new Blob([dataStr], { type: 'application/json' });
-        const url = URL.createObjectURL(dataBlob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'klikkflow-settings.json';
-        link.click();
-      },
-    },
-  ];
+  const actions: PageAction[] = [];
 
   // Create settings sections
   const settingsSections = [

@@ -15,6 +15,7 @@ import {
   ExclamationCircleOutlined,
   PlayCircleOutlined,
 } from '@ant-design/icons';
+import { Modal, message } from 'antd';
 import type React from 'react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -24,7 +25,7 @@ import { ComponentGenerator, PageTemplates } from '@/design-system';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { workflows, executions, isLoading, fetchWorkflows, fetchExecutions } =
+  const { workflows, executions, isLoading, fetchWorkflows, fetchExecutions, deleteWorkflow } =
     useLeanWorkflowStore();
 
   useEffect(() => {
@@ -93,6 +94,27 @@ export const Dashboard: React.FC = () => {
                 type: 'primary',
                 onClick: () => {
                   // Execute workflow logic
+                },
+              },
+              {
+                label: 'Delete',
+                danger: true,
+                onClick: () => {
+                  Modal.confirm({
+                    title: 'Delete Workflow',
+                    content: `Are you sure you want to delete "${workflow.name}"? This action cannot be undone.`,
+                    okText: 'Delete',
+                    okType: 'danger',
+                    cancelText: 'Cancel',
+                    onOk: async () => {
+                      try {
+                        await deleteWorkflow(workflow.id as string);
+                        message.success(`Workflow "${workflow.name}" deleted successfully`);
+                      } catch (_error) {
+                        message.error('Failed to delete workflow');
+                      }
+                    },
+                  });
                 },
               },
             ]),
