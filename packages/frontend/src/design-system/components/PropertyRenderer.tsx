@@ -178,7 +178,7 @@ export const SelectRenderer: React.FC<PropertyRendererProps> = ({ config, contex
         <Option key={option.value} value={option.value} disabled={option.disabled}>
           {option.icon && <span className="mr-2">{option.icon}</span>}
           {option.label}
-          {option.description && <div className="text-xs text-gray-500">{option.description}</div>}
+          {option.description && <div className="text-xs text-gray-400">{option.description}</div>}
         </Option>
       ))}
     </Select>
@@ -413,14 +413,14 @@ export const PropertyRenderer: React.FC<PropertyRendererProps> = ({ config, cont
           <label
             htmlFor={config.id}
             className={cn(
-              'text-sm font-medium text-gray-700 dark:text-gray-300',
+              'text-sm font-medium text-gray-200',
               config.required && 'after:content-["*"] after:ml-1 after:text-red-500'
             )}
           >
             {config.label}
           </label>
           {config.description && (
-            <span className="text-xs text-gray-500">({config.description})</span>
+            <span className="text-xs text-gray-400">({config.description})</span>
           )}
         </div>
       )}

@@ -134,17 +134,20 @@ export const CreateApiKeyModal: React.FC<CreateApiKeyModalProps> = ({ visible, o
         />
 
         <div style={{ marginBottom: 24 }}>
-          <Title level={5}>Your API Key:</Title>
+          <Title level={5} style={{ color: '#ffffff' }}>
+            Your API Key:
+          </Title>
           <div
             style={{
               padding: '12px 16px',
-              background: '#f5f5f5',
+              background: '#374151',
               borderRadius: 4,
-              border: '1px solid #d9d9d9',
+              border: '1px solid #6b7280',
               fontFamily: 'monospace',
               fontSize: 14,
               wordBreak: 'break-all',
               position: 'relative',
+              color: '#ffffff',
             }}
           >
             {showKey ? createdKey : '•'.repeat(createdKey.length)}
@@ -164,17 +167,18 @@ export const CreateApiKeyModal: React.FC<CreateApiKeyModalProps> = ({ visible, o
           </div>
         </div>
 
-        <Paragraph type="secondary">
-          <strong>Usage:</strong> Include this key in your API requests using the{' '}
-          <Text code>x-api-key</Text> header:
+        <Paragraph type="secondary" style={{ color: '#9ca3af' }}>
+          <strong style={{ color: '#ffffff' }}>Usage:</strong> Include this key in your API requests
+          using the <Text code>x-api-key</Text> header:
         </Paragraph>
         <pre
           style={{
             padding: '12px',
-            background: '#fafafa',
+            background: '#1f2937',
             borderRadius: 4,
-            border: '1px solid #d9d9d9',
+            border: '1px solid #6b7280',
             overflow: 'auto',
+            color: '#e5e7eb',
           }}
         >
           {`curl -H "x-api-key: ${showKey ? createdKey : 'YOUR_API_KEY'}" \\
@@ -230,11 +234,11 @@ export const CreateApiKeyModal: React.FC<CreateApiKeyModalProps> = ({ visible, o
               {AVAILABLE_PERMISSIONS.map((perm) => (
                 <div key={perm.value}>
                   <Checkbox value={perm.value}>
-                    <strong>{perm.label}</strong>
-                    <br />
-                    <Text type="secondary" style={{ fontSize: 12 }}>
-                      {perm.description}
-                    </Text>
+                    <span style={{ color: '#ffffff' }}>
+                      <strong>{perm.label}</strong>
+                      <br />
+                      <span style={{ fontSize: 12, color: '#d1d5db' }}>{perm.description}</span>
+                    </span>
                   </Checkbox>
                 </div>
               ))}

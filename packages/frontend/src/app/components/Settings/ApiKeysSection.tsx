@@ -27,10 +27,13 @@ export const ApiKeysSection: React.FC = () => {
     setLoading(true);
     try {
       const keys = await authApiService.getApiKeys();
-      setApiKeys(keys);
+      // Ensure we always set an array to prevent Table crashes
+      setApiKeys(Array.isArray(keys) ? keys : []);
     } catch (error) {
       logger.error('Failed to load API keys', { error });
       message.error('Failed to load API keys');
+      // Set empty array on error to prevent Table crashes
+      setApiKeys([]);
     } finally {
       setLoading(false);
     }
@@ -192,17 +195,19 @@ export const ApiKeysSection: React.FC = () => {
           }}
         >
           <div>
-            <Title level={4} style={{ margin: 0 }}>
+            <Title level={4} style={{ margin: 0, color: '#ffffff' }}>
               API Keys
             </Title>
-            <Text type="secondary">Manage API keys for programmatic access</Text>
+            <Text type="secondary" style={{ color: '#9ca3af' }}>
+              Manage API keys for programmatic access
+            </Text>
           </div>
           <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateKey}>
             Create API Key
           </Button>
         </div>
 
-        <Paragraph type="secondary">
+        <Paragraph type="secondary" style={{ color: '#9ca3af' }}>
           API keys allow you to access your workflows programmatically. Keep your keys secure and
           never share them publicly. You can create up to 10 API keys.
         </Paragraph>

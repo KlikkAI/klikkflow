@@ -4,6 +4,7 @@
  */
 
 import { Router } from 'express';
+import authRoutes from '../domains/auth/routes/authRoutes.js';
 import collaborationRoutes from '../domains/collaboration/routes/collaborationRoutes.js';
 import credentialRoutes from '../domains/credentials/routes/credentialRoutes.js';
 import nodeExecutionRoutes from '../domains/executions/routes/nodeExecutionRoutes.js';
@@ -30,6 +31,7 @@ router.use('/marketplace', marketplaceRoutes);
 router.use('/workflow-optimization', workflowOptimizationRoutes);
 
 // Mount domain routes
+router.use('/auth', authRoutes);
 router.use('/workflows', workflowRoutes);
 router.use('/executions', nodeExecutionRoutes);
 router.use('/credentials', credentialRoutes);
@@ -43,6 +45,7 @@ router.get('/health', (_req, res) => {
     message: 'Backend API is healthy',
     timestamp: new Date().toISOString(),
     services: {
+      auth: 'operational',
       workflows: 'operational',
       executions: 'operational',
       credentials: 'operational',
@@ -68,6 +71,7 @@ router.get('/info', (_req, res) => {
       version: '1.0.0',
       description: 'Backend services for workflow automation platform',
       endpoints: {
+        auth: '/api/auth',
         workflows: '/api/workflows',
         executions: '/api/executions',
         credentials: '/api/credentials',

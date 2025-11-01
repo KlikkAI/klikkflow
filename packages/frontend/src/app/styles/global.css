@@ -5,6 +5,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Ant Design Dark Theme CSS Variables */
+:root {
+  --ant-color-bg-container: #1f2937;
+  --ant-color-bg-elevated: #1f2937;
+  --ant-color-text: #e5e7eb;
+  --ant-color-text-secondary: #9ca3af;
+  --ant-color-border: #374151;
+}
+
 /* Custom styles */
 @layer base {
   * {
@@ -39,8 +48,8 @@
   }
 }
 
-@layer components {
-  .workflow-editor {
+/* Component styles - removed @layer wrapper for higher specificity */
+.workflow-editor {
     @apply h-screen bg-gray-900;
   }
 
@@ -127,4 +136,201 @@
   .ant-card-body {
     color: #ffffff;
   }
-}
+
+  /* Force readable text colors in Settings and all forms */
+  .universal-form label,
+  .universal-form .ant-form-item-label > label,
+  .ant-form-item-label > label,
+  label {
+    color: #e5e7eb !important; /* text-gray-200 */
+  }
+
+  /* Switch and Checkbox labels */
+  .ant-switch + span,
+  .ant-checkbox-wrapper,
+  .ant-checkbox-wrapper span {
+    color: #e5e7eb !important; /* text-gray-200 */
+  }
+
+  /* Description text and subtitles */
+  .universal-form .description,
+  .ant-form-item-extra,
+  .subtitle,
+  p.text-secondary {
+    color: #9ca3af !important; /* text-gray-400 */
+  }
+
+  /* Section titles in forms */
+  .ant-card-head-title,
+  .section-title,
+  h2, h3, h4 {
+    color: #ffffff !important;
+  }
+
+  /* Input text should be white */
+  .ant-input,
+  .ant-input-number-input,
+  .ant-select-selection-item {
+    color: #ffffff !important;
+  }
+
+  /* Ant Design Typography components - force light colors */
+  .ant-typography,
+  .ant-typography-secondary,
+  .ant-paragraph,
+  .ant-typography.ant-typography-secondary,
+  span.ant-typography,
+  span.ant-typography-secondary,
+  div.ant-typography,
+  p.ant-typography,
+  .ant-typography p {
+    color: #9ca3af !important; /* text-gray-400 */
+  }
+
+  /* Typography titles should be white */
+  .ant-typography h1,
+  .ant-typography h2,
+  .ant-typography h3,
+  .ant-typography h4,
+  .ant-typography h5,
+  .ant-typography-h1,
+  .ant-typography-h2,
+  .ant-typography-h3,
+  .ant-typography-h4,
+  .ant-typography-h5 {
+    color: #ffffff !important;
+  }
+
+  /* Regular Text component (not secondary) */
+  .ant-typography:not(.ant-typography-secondary) {
+    color: #e5e7eb !important; /* text-gray-200 */
+  }
+
+  /* Extra aggressive rules for secondary text */
+  [class*="ant-typography-secondary"],
+  [class*="ant-paragraph"] {
+    color: #9ca3af !important;
+  }
+
+  /* Modal content - comprehensive dark theme */
+  .ant-modal-wrap,
+  .ant-modal-root {
+    background-color: rgba(0, 0, 0, 0.65) !important;
+  }
+
+  .ant-modal-content {
+    background-color: #1f2937 !important; /* Dark background */
+    border: 1px solid #374151 !important;
+  }
+
+  .ant-modal-header {
+    background-color: #1f2937 !important; /* Dark header */
+    border-bottom: 1px solid #374151 !important;
+  }
+
+  .ant-modal-title {
+    color: #ffffff !important;
+  }
+
+  .ant-modal-body {
+    background-color: #1f2937 !important; /* Dark body */
+    color: #e5e7eb !important;
+  }
+
+  .ant-modal-footer {
+    background-color: #1f2937 !important; /* Dark footer */
+    border-top: 1px solid #374151 !important;
+  }
+
+  /* Form elements in modals */
+  .ant-modal .ant-form-item-label > label {
+    color: #e5e7eb !important;
+  }
+
+  .ant-modal .ant-form-item-explain,
+  .ant-modal .ant-form-item-extra {
+    color: #9ca3af !important;
+  }
+
+  /* Input fields in modals - dark background */
+  .ant-modal .ant-input,
+  .ant-modal .ant-input-number,
+  .ant-modal .ant-input-number-input {
+    background-color: #374151 !important;
+    border-color: #6b7280 !important;
+    color: #ffffff !important;
+  }
+
+  .ant-modal .ant-input::placeholder,
+  .ant-modal .ant-input-number-input::placeholder {
+    color: #9ca3af !important;
+  }
+
+  .ant-modal .ant-input:hover,
+  .ant-modal .ant-input-number:hover {
+    border-color: #9ca3af !important;
+  }
+
+  .ant-modal .ant-input:focus,
+  .ant-modal .ant-input-number:focus,
+  .ant-modal .ant-input-focused {
+    background-color: #374151 !important;
+    border-color: #3b82f6 !important;
+  }
+
+  /* Select dropdowns in modals */
+  .ant-modal .ant-select-selector {
+    background-color: #374151 !important;
+    border-color: #6b7280 !important;
+    color: #ffffff !important;
+  }
+
+  .ant-modal .ant-select-selection-item,
+  .ant-modal .ant-select-selection-placeholder {
+    color: #ffffff !important;
+  }
+
+  .ant-modal .ant-select-arrow {
+    color: #9ca3af !important;
+  }
+
+  /* Checkbox labels in modals - force white text */
+  .ant-modal .ant-checkbox-wrapper {
+    color: #ffffff !important;
+  }
+
+  .ant-modal .ant-checkbox-wrapper span,
+  .ant-modal .ant-checkbox-wrapper > span:not(.ant-checkbox) {
+    color: #ffffff !important;
+  }
+
+  .ant-modal .ant-checkbox + span {
+    color: #ffffff !important;
+  }
+
+  /* Strong/bold text in modals */
+  .ant-modal strong {
+    color: #ffffff !important;
+  }
+
+  /* Alert in modals */
+  .ant-modal .ant-alert {
+    background-color: #1e3a8a !important;
+    border-color: #3b82f6 !important;
+  }
+
+  .ant-modal .ant-alert-message,
+  .ant-modal .ant-alert-description {
+    color: #e5e7eb !important;
+  }
+
+  /* Error states */
+  .ant-modal .ant-form-item-has-error .ant-input,
+  .ant-modal .ant-form-item-has-error .ant-input-number {
+    background-color: #374151 !important;
+    border-color: #ef4444 !important;
+  }
+
+  .ant-modal .ant-form-item-explain-error {
+    color: #fca5a5 !important;
+  }
