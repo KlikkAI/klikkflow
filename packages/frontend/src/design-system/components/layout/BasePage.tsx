@@ -104,9 +104,9 @@ export const BasePage: React.FC<BasePageProps> = ({
             disabled={action.disabled}
             icon={action.icon}
             className={cn(
-              'bg-gray-700 border-gray-600 text-gray-200',
-              'hover:bg-gray-600 hover:border-gray-500',
-              action.type === 'primary' && 'bg-blue-600 border-blue-600 hover:bg-blue-500'
+              'bg-white/10 backdrop-blur-sm border-white/20 text-white',
+              'hover:bg-white/20 hover:border-white/30 transition-all duration-300',
+              action.type === 'primary' && 'btn-gradient-primary border-0'
             )}
           >
             {action.label}
@@ -193,7 +193,12 @@ export const BasePage: React.FC<BasePageProps> = ({
   };
 
   return (
-    <div className={cn('min-h-screen bg-gray-900 p-4', className)}>
+    <div
+      className={cn(
+        'min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 p-4',
+        className
+      )}
+    >
       <div className={cn(getMaxWidthClass(), 'mx-auto')}>
         {renderHeader()}
         {renderError()}
@@ -249,9 +254,9 @@ export const PageSection: React.FC<PageSectionProps> = ({
                 icon={action.icon}
                 size="small"
                 className={cn(
-                  'bg-gray-700 border-gray-600 text-gray-200',
-                  'hover:bg-gray-600 hover:border-gray-500',
-                  action.type === 'primary' && 'bg-blue-600 border-blue-600 hover:bg-blue-500'
+                  'bg-white/10 backdrop-blur-sm border-white/20 text-white',
+                  'hover:bg-white/20 hover:border-white/30 transition-all duration-300',
+                  action.type === 'primary' && 'btn-gradient-primary border-0'
                 )}
               >
                 {action.label}
@@ -279,7 +284,7 @@ export const PageSection: React.FC<PageSectionProps> = ({
   };
 
   return (
-    <Card className={cn('bg-gray-800 border-gray-700', className)}>
+    <Card className={cn('glass-panel', className)}>
       {renderSectionHeader()}
       {renderContent()}
     </Card>

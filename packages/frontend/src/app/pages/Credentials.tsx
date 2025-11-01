@@ -256,7 +256,7 @@ export const Credentials: React.FC = () => {
   // Create form modal
   const createFormModal = showCreateForm && selectedType && (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-96 overflow-y-auto">
+      <div className="glass-panel rounded-lg shadow-xl max-w-md w-full max-h-96 overflow-y-auto">
         <div className="p-6">
           <h2 className="text-lg font-semibold mb-4">
             {editingCredential ? 'Edit' : 'Create'} {selectedType.displayName} Credential
@@ -295,7 +295,7 @@ export const Credentials: React.FC = () => {
   // Type selection modal
   const typeSelectionModal = showCreateForm && !selectedType && (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full">
+      <div className="glass-panel rounded-lg shadow-xl max-w-md w-full">
         <div className="p-6">
           <h2 className="text-lg font-semibold mb-4">Select Credential Type</h2>
           <div className="space-y-2">
@@ -303,7 +303,7 @@ export const Credentials: React.FC = () => {
               <button
                 key={type.name}
                 onClick={() => setSelectedType(type)}
-                className="w-full text-left p-3 rounded-lg border hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                className="w-full text-left p-3 rounded-lg border bg-white/5 border-white/20 hover:bg-white/10 hover:border-white/30 transition-all duration-300"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-xl">{type.icon || '🔐'}</span>

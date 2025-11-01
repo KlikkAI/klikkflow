@@ -36,6 +36,67 @@ ReactDOM.createRoot(rootElement).render(
     <ConfigProvider
       theme={{
         algorithm: theme.darkAlgorithm,
+        token: {
+          // Primary brand colors (blue-purple gradient)
+          colorPrimary: '#3b82f6', // blue-500
+          colorInfo: '#3b82f6',
+          colorSuccess: '#10b981', // green-500
+          colorWarning: '#fb923c', // orange-400
+          colorError: '#ef4444', // red-500
+
+          // Background colors with transparency for glassmorphism
+          colorBgContainer: 'rgba(255, 255, 255, 0.05)', // glass-panel equivalent
+          colorBgElevated: 'rgba(255, 255, 255, 0.08)',
+          colorBgLayout: '#0f172a', // slate-900 (for gradient base)
+
+          // Border colors with transparency
+          colorBorder: 'rgba(255, 255, 255, 0.2)',
+          colorBorderSecondary: 'rgba(255, 255, 255, 0.1)',
+
+          // Text colors
+          colorText: '#ffffff',
+          colorTextSecondary: '#cbd5e1', // slate-300
+          colorTextTertiary: '#94a3b8', // slate-400
+          colorTextQuaternary: '#64748b', // slate-500
+
+          // Border radius for modern look
+          borderRadius: 8,
+          borderRadiusLG: 12,
+
+          // Font settings
+          fontSize: 14,
+          fontSizeHeading1: 32,
+          fontSizeHeading2: 24,
+          fontSizeHeading3: 20,
+        },
+        components: {
+          Card: {
+            colorBgContainer: 'rgba(255, 255, 255, 0.05)',
+            colorBorderSecondary: 'rgba(255, 255, 255, 0.2)',
+          },
+          Modal: {
+            contentBg: 'rgba(255, 255, 255, 0.05)',
+            headerBg: 'rgba(255, 255, 255, 0.05)',
+          },
+          Table: {
+            headerBg: 'rgba(255, 255, 255, 0.08)',
+            rowHoverBg: 'rgba(255, 255, 255, 0.1)',
+          },
+          Input: {
+            colorBgContainer: 'rgba(255, 255, 255, 0.1)',
+            colorBorder: 'rgba(255, 255, 255, 0.3)',
+            activeBorderColor: '#3b82f6',
+          },
+          Select: {
+            colorBgContainer: 'rgba(255, 255, 255, 0.1)',
+            colorBorder: 'rgba(255, 255, 255, 0.3)',
+          },
+          Button: {
+            colorBgContainer: 'rgba(255, 255, 255, 0.1)',
+            colorBorder: 'rgba(255, 255, 255, 0.2)',
+            primaryShadow: '0 0 20px rgba(59, 130, 246, 0.3)',
+          },
+        },
       }}
     >
       <HelmetProvider>

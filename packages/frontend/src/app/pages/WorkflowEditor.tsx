@@ -48,9 +48,9 @@ export const WorkflowEditor: React.FC = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gray-900">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
       {/* Header Bar */}
-      <div className="flex items-center justify-between px-6 py-3 bg-gray-800 border-b border-gray-700">
+      <div className="flex items-center justify-between px-6 py-3 bg-white/5 backdrop-blur-md border-b border-white/20">
         <div>
           <h1 className="text-xl font-bold text-white">
             {currentWorkflow?.name || 'New Workflow'}
@@ -68,7 +68,7 @@ export const WorkflowEditor: React.FC = () => {
             onClick={handleSave}
             disabled={isLoading}
             loading={isLoading}
-            className="bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600 hover:border-gray-500"
+            className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300"
           >
             Save
           </Button>
@@ -76,7 +76,7 @@ export const WorkflowEditor: React.FC = () => {
             type="default"
             icon={<ExperimentOutlined />}
             onClick={handleTestRun}
-            className="bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600 hover:border-gray-500"
+            className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300"
           >
             Test Run
           </Button>
@@ -84,7 +84,7 @@ export const WorkflowEditor: React.FC = () => {
             type="primary"
             icon={<PlayCircleOutlined />}
             onClick={() => logger.info('Execute workflow', { workflowId: id })}
-            className="bg-blue-600 border-blue-600 hover:bg-blue-500"
+            className="btn-gradient-primary border-0"
           >
             Execute
           </Button>
