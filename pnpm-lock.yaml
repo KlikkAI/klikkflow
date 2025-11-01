@@ -883,6 +883,9 @@ importers:
       '@klikkflow/ai':
         specifier: workspace:*
         version: link:../@klikkflow/ai
+      '@klikkflow/auth':
+        specifier: workspace:*
+        version: link:../@klikkflow/auth
       '@klikkflow/core':
         specifier: workspace:*
         version: link:../@klikkflow/core
