@@ -115,6 +115,7 @@ export class PageGenerator {
         actions={config.actions}
         loading={config.loading}
         error={config.error}
+        maxWidth="wide"
       >
         {/* Statistics Section */}
         <PageSection title="Overview">

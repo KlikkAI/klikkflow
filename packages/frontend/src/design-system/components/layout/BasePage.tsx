@@ -34,6 +34,7 @@ interface BasePageProps {
   className?: string;
   headerClassName?: string;
   contentClassName?: string;
+  maxWidth?: 'default' | 'wide' | 'full';
   children: ReactNode;
 }
 
@@ -52,6 +53,7 @@ export const BasePage: React.FC<BasePageProps> = ({
   className = '',
   headerClassName = '',
   contentClassName = '',
+  maxWidth = 'default',
   children,
 }) => {
   const renderBreadcrumbs = () => {
@@ -93,9 +95,9 @@ export const BasePage: React.FC<BasePageProps> = ({
 
     return (
       <Space>
-        {actions.map((action, index) => (
+        {actions.map((action) => (
           <Button
-            key={index}
+            key={action.label}
             type={action.type || 'default'}
             onClick={action.onClick}
             loading={action.loading}
@@ -179,9 +181,20 @@ export const BasePage: React.FC<BasePageProps> = ({
     return <div className={cn('space-y-6', contentClassName)}>{children}</div>;
   };
 
+  const getMaxWidthClass = () => {
+    switch (maxWidth) {
+      case 'full':
+        return 'max-w-full';
+      case 'wide':
+        return 'max-w-[1920px]';
+      default:
+        return 'max-w-7xl';
+    }
+  };
+
   return (
-    <div className={cn('min-h-screen bg-gray-900 p-6', className)}>
-      <div className="max-w-7xl mx-auto">
+    <div className={cn('min-h-screen bg-gray-900 p-4', className)}>
+      <div className={cn(getMaxWidthClass(), 'mx-auto')}>
         {renderHeader()}
         {renderError()}
         {renderContent()}
@@ -226,9 +239,9 @@ export const PageSection: React.FC<PageSectionProps> = ({
 
         {actions && (
           <Space>
-            {actions.map((action, index) => (
+            {actions.map((action) => (
               <Button
-                key={index}
+                key={action.label}
                 type={action.type || 'default'}
                 onClick={action.onClick}
                 loading={action.loading}

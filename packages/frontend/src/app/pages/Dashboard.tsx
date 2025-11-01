@@ -14,18 +14,17 @@ import {
   CheckCircleOutlined,
   ExclamationCircleOutlined,
   PlayCircleOutlined,
-  PlusOutlined,
 } from '@ant-design/icons';
 import type React from 'react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLeanWorkflowStore } from '@/core/stores/leanWorkflowStore';
-import type { PageAction, PageSectionConfig, Statistic } from '@/design-system';
+import type { PageSectionConfig, Statistic } from '@/design-system';
 import { ComponentGenerator, PageTemplates } from '@/design-system';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { workflows, executions, isLoading, fetchWorkflows, fetchExecutions, createNewWorkflow } =
+  const { workflows, executions, isLoading, fetchWorkflows, fetchExecutions } =
     useLeanWorkflowStore();
 
   useEffect(() => {
@@ -69,22 +68,6 @@ export const Dashboard: React.FC = () => {
     },
   ];
 
-  // Page actions
-  const actions: PageAction[] = [
-    {
-      label: 'Create Workflow',
-      type: 'primary',
-      icon: <PlusOutlined />,
-      onClick: async () => {
-        try {
-          await createNewWorkflow('Untitled Workflow', navigate);
-        } catch (error) {
-          console.error('Failed to create workflow:', error);
-        }
-      },
-    },
-  ];
-
   // Additional sections
   const sections: PageSectionConfig[] = [
     {
@@ -93,7 +76,7 @@ export const Dashboard: React.FC = () => {
       type: 'list',
       data: workflows.slice(0, 5),
       config: {
-        renderItem: (workflow: any) =>
+        renderItem: (workflow: Record<string, unknown>) =>
           ComponentGenerator.generateComponent({
             id: `workflow-${workflow.id}`,
             type: 'card',
@@ -130,7 +113,7 @@ export const Dashboard: React.FC = () => {
       type: 'list',
       data: executions.slice(0, 5),
       config: {
-        renderItem: (execution: any) =>
+        renderItem: (execution: Record<string, unknown>) =>
           ComponentGenerator.generateComponent({
             id: `execution-${execution.id}`,
             type: 'list-item',
@@ -153,7 +136,7 @@ export const Dashboard: React.FC = () => {
   ];
 
   // Generate the complete dashboard using PageTemplates
-  return PageTemplates.dashboard('Workflows', stats, sections, actions);
+  return PageTemplates.dashboard('Workflows', stats, sections);
 };
 
 export default Dashboard;
